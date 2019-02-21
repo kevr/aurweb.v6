@@ -40,4 +40,25 @@ class Ban(models.Model):
   ip_address = models.CharField(max_length=45)
   ban_timestamp = models.DateTimeField(default=timezone.now)
 
+class APIRateLimit(models.Model):
+  ip_address = models.CharField(max_length=45)
+  requests = models.IntegerField(0)
+  window_start = models.IntegerField(0)
+
+  indexes = [
+    models.Index(fields=['window_start',])
+  ]
+
+class Term(models.Model):
+  description = models.CharField(max_length=255)
+  url = models.CharField(max_length=8000)
+  revision = models.IntegerField(default=1)
+
+class AcceptedTerm(models.Model):
+  user = models.ForeignKey(AURUser, on_delete=models.CASCADE,
+      related_name="accepted_terms")
+  term = models.ForeignKey(Term, on_delete=models.CASCADE,
+      related_name="accepted")
+  revision = models.IntegerField(default=0)
+
 # End of users.models

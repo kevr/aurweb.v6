@@ -56,7 +56,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'aurweb.urls'
+ROOT_URLCONF = 'aurwebdj.urls'
 
 TEMPLATES = [
     {
@@ -74,7 +74,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'aurweb.wsgi.application'
+WSGI_APPLICATION = 'aurwebdj.wsgi.application'
 
 
 # Database

@@ -171,11 +171,6 @@ class OfficialProvider(models.Model):
   repo = models.CharField(max_length=64)
   provides = models.CharField(max_length=64)
 
-class Term(models.Model):
-  description = models.CharField(max_length=255)
-  url = models.CharField(max_length=8000)
-  revision = models.IntegerField(default=1)
-
 '''
 Receive a list of tu_votes related to this VoteInfo:
   self.tu_votes.get(pk=self).user.id  
