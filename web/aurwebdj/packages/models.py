@@ -40,8 +40,8 @@ class License(models.Model):
 class PackageLicense(models.Model):
   license = models.ForeignKey(License, on_delete=models.DO_NOTHING,
       related_name="package_licenses")
-  package = models.OneToOneField(Package, on_delete=models.CASCADE,
-      related_name="package_license")
+  package = models.ForeignKey(Package, on_delete=models.CASCADE,
+      related_name="package_license", primary_key=False)
 
 class DependencyType(models.Model):
   name = models.CharField(max_length=32)
