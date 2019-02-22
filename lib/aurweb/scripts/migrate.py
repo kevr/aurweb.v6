@@ -387,7 +387,7 @@ convert_tables = OrderedDict({
     "function": to_packages_officialprovider
   },
   "PackageDepends": {
-    "table": "package_packagedependency",
+    "table": "packages_packagedependency",
     "function": to_packages_packagedependency
   },
   "PackageGroups": {
