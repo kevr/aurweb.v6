@@ -63,4 +63,10 @@ class AcceptedTerm(models.Model):
       related_name="accepted")
   revision = models.IntegerField(default=0)
 
+class SSHPubKey(models.Model):
+  user = models.ForeignKey(AURUser, on_delete=models.CASCADE,
+      related_name="ssh_keys", primary_key=False)
+  fingerprint = models.CharField(max_length=44, primary_key=True)
+  pub_key = models.CharField(max_length=4096)
+
 # End of users.models

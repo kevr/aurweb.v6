@@ -307,7 +307,7 @@ def to_packages_packagevote(row, db):
       package_base=pkgbase, voted_at=convert_datetime(vote_ts)):
     print("%s copied" % str(row))
 
-def to_packages_sshpubkey(row, db):
+def to_users_sshpubkey(row, db):
   user_id, fp, pk = row
   user = AURUser.objects.get(pk=user_id)
   if create_if_not(SSHPubKey, user=user, fingerprint=fp, pub_key=pk):
@@ -431,8 +431,8 @@ convert_tables = OrderedDict({
     "function": to_packages_packageblacklist
   },
   "SSHPubKeys": {
-    "table": "packages_sshpubkey",
-    "function": to_packages_sshpubkey
+    "table": "users_sshpubkey",
+    "function": to_users_sshpubkey
   },
   "Terms": {
     "table": "users_term",

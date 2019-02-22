@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from users.models import AURUser, Ban
 
 class PackageBase(models.Model):
+  num_votes = models.IntegerField(default=0)
   name = models.CharField(max_length=255)
   popularity = models.FloatField(default=0.0)
 
@@ -31,7 +32,7 @@ class Package(models.Model):
   name = models.CharField(max_length=255)
   version = models.CharField(max_length=255)
   description = models.CharField(max_length=255, default="")
-  url = models.CharField(max_length=255, default="")
+  url = models.CharField(max_length=255, null=True, blank=True)
 
 class License(models.Model):
   name = models.CharField(max_length=255, unique=True)
@@ -154,12 +155,6 @@ class PackageRelation(models.Model):
   condition = models.CharField(max_length=255, null=True, blank=True)
   arch = models.CharField(max_length=255, null=True, blank=True)
 
-class SSHPubKey(models.Model):
-  user = models.ForeignKey(AURUser, on_delete=models.CASCADE,
-      related_name="ssh_keys", primary_key=False)
-  fingerprint = models.CharField(max_length=44, primary_key=True)
-  pub_key = models.CharField(max_length=4096)
-
 class OfficialProvider(models.Model):
   package = models.ForeignKey(Package, on_delete=models.CASCADE,
       related_name="official_providers", primary_key=False)
@@ -181,10 +176,15 @@ class TUVoteInfo(models.Model):
   submitted_at = models.DateTimeField()
   end_at = models.DateTimeField()
 
+  quorum = models.DecimalField(max_digits=2, decimal_places=2, default=0)
+
   yes = models.IntegerField(default=0)
   no = models.IntegerField(default=0)
   abstrain = models.IntegerField(default=0)
   active_tus = models.IntegerField(default=0)
+
+  submitter = models.ForeignKey(AURUser, on_delete=models.CASCADE,
+      related_name="tu_voteinfos", null=True)
 
 class TUVote(models.Model):
   info = models.ForeignKey(TUVoteInfo, on_delete=models.CASCADE,
