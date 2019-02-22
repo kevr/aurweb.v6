@@ -124,7 +124,7 @@ def to_users_acceptedterm(row, db):
 def to_users_ban(row, db):
   ip_address, ban_ts = row
   if create_if_not(Ban, ip_address=ip_address,
-      banned_at=make_aware(ban_ts).strftime("%Y-%m-%d %H:%M:%S")):
+      banned_at=timezone.make_aware(ban_ts).strftime("%Y-%m-%d %H:%M:%S")):
     print("%s copied" % str(row))
 
 def to_users_apiratelimit(row, db):
