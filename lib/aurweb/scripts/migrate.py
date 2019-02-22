@@ -78,7 +78,7 @@ def to_users_auruser(row, db):
 
   if not AURUser.objects.filter(username=username).exists():
     user = AURUser.objects.create_user(
-        pk=user_id,
+        uid=user_id,
         account_type = AURAccountType.objects.get(pk=account_type_id),
         suspended=bool(suspended),
         email=email,
@@ -115,7 +115,7 @@ def to_users_term(row, db):
 
 def to_users_acceptedterm(row, db):
   user_id, term_id, rev = row
-  auruser = AURUser.objects.get(pk=user_id)
+  auruser = AURUser.objects.get(uid=user_id)
   term = Term.objects.get(pk=term_id)
   if create_if_not(AcceptedTerm, user=auruser, term=term,
       revision=rev):
@@ -167,14 +167,14 @@ def to_packages_packagebase(row, db):
   flagger, submitter = None, None
   maintainer, packager = None, None
 
-  if AURUser.objects.filter(pk=flagger_uid).exists():
-    flagger = AURUser.objects.get(pk=flagger_uid)
-  if AURUser.objects.filter(pk=submitter_uid).exists():
-    submitter = AURUser.objects.get(pk=submitter_uid)
-  if AURUser.objects.filter(pk=maintainer_uid).exists():
-    maintainer = AURUser.objects.get(pk=maintainer_uid)
-  if AURUser.objects.filter(pk=packager_uid).exists():
-    packager = AURUser.objects.get(pk=packager_uid)
+  if AURUser.objects.filter(uid=flagger_uid).exists():
+    flagger = AURUser.objects.get(uid=flagger_uid)
+  if AURUser.objects.filter(uid=submitter_uid).exists():
+    submitter = AURUser.objects.get(uid=submitter_uid)
+  if AURUser.objects.filter(uid=maintainer_uid).exists():
+    maintainer = AURUser.objects.get(uid=maintainer_uid)
+  if AURUser.objects.filter(uid=packager_uid).exists():
+    packager = AURUser.objects.get(uid=packager_uid)
 
   if create_if_not(PackageBase, pk=_id,
       name=name,
@@ -244,7 +244,7 @@ def to_packages_packagerelation(row, db):
 def to_packages_packagenotification(row, db):
   pkgbase_id, user_id = row
   pkgbase = PackageBase.objects.get(pk=pkgbase_id)
-  user = AURUser.objects.get(pk=user_id)
+  user = AURUser.objects.get(uid=user_id)
   if create_if_not(PackageNotification, package_base=pkgbase, user=user):
     print("%s copied" % str(row))
 
@@ -261,11 +261,11 @@ def to_packages_packagecomments(row, db):
       del_user_id, pinned_ts = row
 
   pkgbase = PackageBase.objects.get(pk=pkgbase_id)
-  user = AURUser.objects.get(pk=user_id)
+  user = AURUser.objects.get(uid=user_id)
   edited_user = None if not edited_user_id else \
-      AURUser.objects.get(pk=edited_user_id)
+      AURUser.objects.get(uid=edited_user_id)
   del_user = None if not del_user_id else \
-      AURUser.objects.get(pk=del_user_id)
+      AURUser.objects.get(uid=del_user_id)
 
   if create_if_not(PackageComments, package_base=pkgbase,
       user=user,
@@ -281,7 +281,7 @@ def to_packages_packagecomments(row, db):
 
 def to_packages_packagecomaintainer(row, db):
   user_id, pkgbase_id, pri = row
-  user = AURUser.objects.get(pk=user_id)
+  user = AURUser.objects.get(uid=user_id)
   pkgbase = PackageBase.objects.get(pk=pkgbase_id)
   if not create_if_not(PackageComaintainer, user=user,
       package_base=pkgbase, priority=pri):
@@ -301,7 +301,7 @@ def to_packages_packagegroup(row, db):
 
 def to_packages_packagevote(row, db):
   user_id, pkgbase_id, vote_ts = row
-  user = AURUser.objects.get(pk=user_id)
+  user = AURUser.objects.get(uid=user_id)
   pkgbase = PackageBase.objects.get(pk=pkgbase_id)
   if create_if_not(PackageVote, user=user,
       package_base=pkgbase, voted_at=convert_datetime(vote_ts)):
@@ -309,7 +309,7 @@ def to_packages_packagevote(row, db):
 
 def to_users_sshpubkey(row, db):
   user_id, fp, pk = row
-  user = AURUser.objects.get(pk=user_id)
+  user = AURUser.objects.get(uid=user_id)
   if create_if_not(SSHPubKey, user=user, fingerprint=fp, pub_key=pk):
     print("%s copied" % str(row))
 
@@ -317,7 +317,7 @@ def to_packages_tuvoteinfo(row, db):
   _id, agenda, username, submitted_ts, end_ts, quorum, \
       submitter_id, yes, no, abstain, active_tus = row
 
-  submitter = AURUser.objects.get(pk=submitter_id)
+  submitter = AURUser.objects.get(uid=submitter_id)
 
   if create_if_not(TUVoteInfo, submitter=submitter,
       pk=_id,
@@ -333,7 +333,7 @@ def to_packages_tuvoteinfo(row, db):
 def to_packages_tuvote(row, db):
   vote_id, user_id = row
   vote = TUVoteInfo.objects.get(pk=vote_id)
-  user = AURUser.objects.get(pk=user_id)
+  user = AURUser.objects.get(uid=user_id)
   if create_if_not(TUVote, vote=vote, user=user):
     print("%s copied" % str(row))
 

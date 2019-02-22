@@ -8,6 +8,8 @@ class AURAccountType(models.Model):
   name = models.CharField(max_length=32)
 
 class AURUser(User):
+  uid = models.IntegerField(default=1, primary_key=False)
+
   account_type = models.ForeignKey(AURAccountType,
       on_delete=models.CASCADE, related_name="users", primary_key=False)
 
@@ -37,6 +39,18 @@ class AURUser(User):
   comment_notify = models.BooleanField(default=True)
   update_notify = models.BooleanField(default=False)
   ownership_notify = models.BooleanField(default=True)
+
+  indexes = [
+    models.Index(fields=['uid',])
+  ]
+
+  # Custom autoincrement on uid
+  def save(self, *args, **kwargs):
+    if self._state.adding:
+      last_id = AURUser.objects.all().aggregate(largest=models.Max('uid'))['largest']
+      if last_id is not None:
+        self.uid = last_id + 1
+    super().save(*args, **kwargs)
 
 class Ban(models.Model):
   ip_address = models.CharField(max_length=45, primary_key=True)
