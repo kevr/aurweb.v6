@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 import json
 from .serializers import get_package_serializer
+from packages.models import *
 
 ''' Helpers '''
 def json_response(data):
@@ -45,7 +46,12 @@ class RPCView(APIView):
     self.serializer = get_package_serializer(1)
 
   def search(self, by_types, args):
-    return []
+    pkgs = Package.objects.all()
+    Serializer = get_package_serializer(6)
+    data = []
+    for pkg in pkgs:
+      data.append(Serializer(pkg).data)
+    return data
 
   def info(self, by_types, args):
     return []
@@ -88,22 +94,22 @@ class RPCView(APIView):
 
     response_data['type'] = stype
 
-    # We default to name-desc if no by is provided
-    by = data.get("by", "name-desc")
-
-    # Treat everything as a list in our v6 method of search/info results
-    if not isinstance(by, list):
-      by = [by]
+    by = data.getlist("by[]")
+    if not by:
+      # We default to name-desc if no by is provided
+      by = [data.get("by", "name-desc")]
 
     for term in by:
       if not term in self.exposed_fields:
         return json_error("Invalid `by` field value: `%s`." % term)
 
-    args = data.get("arg", None)
+    args = data.getlist("arg[]")
+    if not args:
+      args = data.get("arg", None)
+      if args: args = [args]
+
     if not args:
       return json_error("No `arg` argument provided.")
-    if not isinstance(args, list):
-      args = [args]
 
     response_data['resultcount'] = 0
     response_data['results'] = self.exposed_methods[stype](by, args)

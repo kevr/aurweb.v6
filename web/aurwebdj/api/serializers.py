@@ -3,14 +3,22 @@ from rest_framework import serializers
 Serializer = serializers.Serializer
 
 class PackageSerializer1(Serializer):
+  Id = serializers.ReadOnlyField(source='id')
+  Name = serializers.CharField(source='name')
+
   class Meta:
     model = Package
 
 class PackageSerializer2(Serializer):
+  Id = serializers.ReadOnlyField(source='id')
+  Name = serializers.CharField(source='name')
+
   class Meta:
     model = Package
 
 class PackageSerializer4(Serializer):
+  Id = serializers.ReadOnlyField(source='id')
+  Name = serializers.CharField(source='name')
   class Meta:
     model = Package
 
