@@ -5,6 +5,7 @@ import click
 import pytz
 import string
 import random
+from collections import OrderedDict
 
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.abspath(sys.argv[0])))
 AURWEB_DJANGO_DIR = os.path.join(BASE_DIR, "../../../web/aurwebdj")
@@ -14,7 +15,6 @@ sys.path.insert(0, os.path.join(BASE_DIR, "../.."))
 
 import aurweb.config
 import aurweb.db
-from collections import OrderedDict
 
 # Prepare django environment so we can access its models.
 
@@ -43,8 +43,8 @@ Conversion functions, format to_<app>_<table>(row, db): From mysql to django mod
 
 Each function shall take a single row to convert.
 
-@param fr The row from the export database
-@param fdb The handle to the export database
+@param row The row from the export database
+@param db The handle to the export database
 '''
 def convert_datetime(orig):
   if not orig:
