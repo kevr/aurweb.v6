@@ -33,6 +33,7 @@ APPEND_SLASH = True
 
 INSTALLED_APPS = [
     # aurweb django apps
+    'home',
     'api',
     'packages',
     'users',
