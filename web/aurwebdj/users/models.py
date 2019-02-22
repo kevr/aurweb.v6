@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django_unixdatetimefield import UnixDateTimeField
 User = get_user_model()
 
 class AURAccountType(models.Model):
@@ -10,6 +11,7 @@ class AURUser(User):
   account_type = models.ForeignKey(AURAccountType,
       on_delete=models.CASCADE, related_name="users", primary_key=False)
 
+  realname = models.CharField(max_length=255, default="")
   suspended = models.BooleanField(default=False)
   hide_email = models.BooleanField(default=False)
 
@@ -30,15 +32,15 @@ class AURUser(User):
 
   inactivity_ts = models.IntegerField(default=0)
 
-  registered_at = models.DateTimeField(default=timezone.now)
+  registered_at = models.DateTimeField(null=True, blank=True)
 
   comment_notify = models.BooleanField(default=True)
   update_notify = models.BooleanField(default=False)
   ownership_notify = models.BooleanField(default=True)
 
 class Ban(models.Model):
-  ip_address = models.CharField(max_length=45)
-  ban_timestamp = models.DateTimeField(default=timezone.now)
+  ip_address = models.CharField(max_length=45, primary_key=True)
+  banned_at = models.DateTimeField(default=timezone.now)
 
 class APIRateLimit(models.Model):
   ip_address = models.CharField(max_length=45)
