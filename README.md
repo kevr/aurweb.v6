@@ -10,13 +10,27 @@ the following improvements to aurweb from a developer perspective:
 * Easy to integrate HTTP transport middlewares
 * Simplified reasoning of codebase from reviewer's perspective
 * Structured framework
+* Separation between Controller and View
 
 And as for the user-view improvements:
 
 * Standardize v6 API across the board (multiple by predicates)
 * POST requests now work across all API requests
+* Increased password hashing security OOB
 
 Many additional improvements are to be added as soon as possible.
+
+Dependencies
+------------
+
+* Django
+* djangorestframework
+* passlib (required for compat password hashes)
+
+Optional Dependencies
+---------------------
+
+* django-subdomain (required for hosting aurwebdj in a Django project with existing routes)
 
 Authors
 -------
@@ -28,7 +42,6 @@ of the original aurweb backend python package and PHP-driven aurweb:
 of distinct contents of this repository, not including `./lib/aurweb`:
 
 Kevin Morris &lt;kevr.gtalk@gmail.com&gt;
-
 
 License
 -------
