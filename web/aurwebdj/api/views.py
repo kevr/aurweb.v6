@@ -43,15 +43,10 @@ class RPCView(APIView):
       "depends", "makedepends", "checkdepends", "optdepends",
     }
 
-    self.serializer = get_package_serializer(1)
-
   def search(self, by_types, args):
     pkgs = Package.objects.all()
     Serializer = get_package_serializer(6)
-    data = []
-    for pkg in pkgs:
-      data.append(Serializer(pkg).data)
-    return data
+    return Serializer(pkgs, many=True).data
 
   def info(self, by_types, args):
     return []
