@@ -69,7 +69,7 @@
 
     <div id="content">
       <div id="lang_sub">
-        <form method="post" action="/">
+        <form method="post" action="/update/">
           <fieldset>
             <div>
               <select name="setlang" id="id_setlang">
@@ -81,6 +81,7 @@
                 {% endif %}
                 {% endfor %}
               </select>
+              <input type="hidden" name="next" value="{{ request.path }}" />
               {% csrf_token %}
               <input type="submit" value="Go" />
             </div>

@@ -2,10 +2,31 @@ from django.shortcuts import render
 from django.views import View
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login, logout, get_user_model
+from django.conf import settings
+from django.utils import translation
+
 from helpers.render import aur_render
 from users.models import AURUser, AURAccountType
 
 User = get_user_model()
+
+class UpdateView(View):
+  def post(self, request):
+    _next = None
+    if "next" in request.POST:
+      _next = request.POST["next"]
+
+    if "setlang" in request.POST:
+      if request.user.is_authenticated:
+        auruser = AURUser.objects.get(user_ptr=request.user)
+        auruser.lang_preference = request.POST["setlang"]
+        auruser.save()
+      response = HttpResponseRedirect(_next if _next else "/")
+      request.session[translation.LANGUAGE_SESSION_KEY] = request.POST["setlang"]
+      response.set_cookie(settings.LANGUAGE_COOKIE_NAME, request.POST["setlang"])
+      return response
+
+    return HttpResponseRedirect("/")
 
 class LoginView(View):
   def get(self, request):
@@ -18,8 +39,7 @@ class LoginView(View):
     errors = []
 
     if not username or not passwd:
-      errors.append("Bad username or password.")
-      return self.render(request, errors)
+      return self.render(request)
 
     if not AURUser.objects.filter(username=username).exists():
       errors.append("Bad username or password.")

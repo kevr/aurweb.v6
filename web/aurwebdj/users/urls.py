@@ -6,6 +6,7 @@ urlpatterns = [
   path("login/", LoginView.as_view(), name="user_login"),
   path("logout/", LogoutView.as_view(), name="user_logout"),
   path("accounts/", UserSearchView.as_view(), name="user_search"),
+  path("update/", UpdateView.as_view(), name="update"),
   # path("account/<user>/comments/", UserCommentsView.as_view(), name="user_comments"),
   # account/<user>/update/ may be removed in favor of GET+POST account/<user>/edit/
   # path("account/<user>/update/" UserUpdateView.as_view(), name="user_update"),
