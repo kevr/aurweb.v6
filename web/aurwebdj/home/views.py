@@ -27,7 +27,7 @@ class HomeView(View):
       user = AURUser.objects.get(user_ptr=request.user)
       lang = user.lang_preference
 
-    pkgs = PackageBase.objects.all()
+    pkgs = PackageBase.objects
     orphaned = pkgs.filter(maintainer=None)
 
     now = timezone.now()
@@ -36,13 +36,13 @@ class HomeView(View):
     pkgs_mod_past_year = pkgs.filter(modified_at__gte=(now - timedelta(days=365)))
     pkgs_mod_never = pkgs.filter(modified_at=F("submitted_at"))
 
-    registered_users = AURUser.objects.all()
+    registered_users = AURUser.objects.count()
     
     tu_type = AURAccountType.objects.get(name="Trusted User")
     tu_dev_type = AURAccountType.objects.get(name="Trusted User & Developer")
 
-    tu_users = registered_users.filter(
-        Q(account_type=tu_type) | Q(account_type=tu_dev_type))
+    tu_users = AURUser.objects.filter(
+        Q(account_type=tu_type) | Q(account_type=tu_dev_type)).count()
 
     recent_updates = pkgs.order_by("-modified_at")[:15]
 
@@ -57,7 +57,7 @@ class HomeView(View):
     # Truncate, we only need 15 for home page
     updates = updates[15:]
 
-    pkgs = sum_packages_from_base(pkgs)
+    pkgs = Package.objects.count()
 
     stats = OrderedDict({
       "Packages": pkgs,
@@ -71,8 +71,8 @@ class HomeView(View):
         sum_packages_from_base(pkgs_mod_past_year),
       "Packages never updated":
         sum_packages_from_base(pkgs_mod_never),
-      "Registered Users": len(registered_users),
-      "Trusted Users": len(tu_users)
+      "Registered Users": registered_users,
+      "Trusted Users": tu_users
     })
 
     fingerprints = {
