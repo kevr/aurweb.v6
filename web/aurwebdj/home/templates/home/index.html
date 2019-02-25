@@ -1,0 +1,156 @@
+{% extends "aurbase.html" %}
+{% load static %}
+{% load i18n %}
+{% load trans_args %}
+
+{% block ptitle %}{% trans "Home" %}{% endblock %}
+
+{% block content %}
+
+<div id="content-left-wrapper">
+  <div id="content-left">
+    <div id="intro" class="box">
+      {% if request.user.is_authenticated %}
+      <!-- A logged in user has a different dashboard -->
+      <h2>{% trans "Dashboard" %}</h2>
+      <h3>{% trans "My Flagged Packages" %}</h3>
+
+      <h3>{% trans "My Requests" %}</h3>
+
+      {% else %}
+      <!-- Unauthenticated users get a welcoming to the AUR -->
+			<h2>AUR {% trans "Home" %}</h2>
+			<p>
+			{% trans_args "Welcome to the AUR! Please read the {}AUR User Guidelines{} and {}AUR TU Guidelines{} for more information.|<a href='https://wiki.archlinux.org/index.php/AUR_User_Guidelines'>|</a>|<a href='https://wiki.archlinux.org/index.php/AUR_Trusted_User_Guidelines'>|</a>" %}
+			{% trans_args "Contributed PKGBUILDs {}must{} conform to the {}Arch Packaging Standards{} otherwise they will be deleted!|<strong>|</strong>|<a href='https://wiki.archlinux.org/index.php/Arch_Packaging_Standards'>|</a>" %}
+			{% trans "Remember to vote for your favourite packages!" %}
+			{% trans "Some packages may be provided as binaries in [community]." %}
+			</p>
+			<p class="important">
+				{% trans "DISCLAIMER" %}:
+				{% trans "AUR packages are user produced content. Any use of the provided files is at your own risk." %}
+			</p>
+
+      <p class="readmore"><a href="https://wiki.archlinux.org/index.php/AUR">{% trans "Learn more..." %}</a></p>
+      {% endif %}
+    </div>
+
+  <!-- Introduction support information -->
+  {% if not request.user.is_authenticated %}
+  <div id="news">
+		<h3>
+			<a>{% trans "Support" %}</a>
+			<span class="arrow"></span>
+		</h3>
+
+		<h4>{% trans "Package Requests" %}</h4>
+		<div class="article-content">
+			<p>
+			{% trans_args "There are three types of requests that can be filed in the {}Package Actions{} box on the package details page:|<var>|</var>" %}
+			</p>
+
+			<ul>
+				<li><em>{% trans "Orphan Request" %}</em>: {% trans "Request a package to be disowned, e.g. when the maintainer is inactive and the package has been flagged out-of-date for a long time." %}</li>
+				<li><em>{% trans "Deletion Request" %}</em>: {% trans "Request a package to be removed from the Arch User Repository. Please do not use this if a package is broken and can be fixed easily. Instead, contact the package maintainer and file orphan request if necessary." %}</li>
+				<li><em>{% trans "Merge Request" %}</em>: {% trans "Request a package to be merged into another one. Can be used when a package needs to be renamed or replaced by a split package." %}</li>
+			</ul>
+
+			<p>
+				{% trans_args "If you want to discuss a request, you can use the {}aur-requests{} mailing list. However, please do not use that list to file requests.|<a href='https://mailman.archlinux.org/mailman/listinfo/aur-requests'>|</a>" %}
+			</p>
+
+		</div>
+
+		<h4>{% trans "Submitting Packages" %}</h4>
+		<div class="article-content">
+			<p>
+			{% trans_args "Git over SSH is now used to submit packages to the AUR. See the {}Submitting packages{} section of the Arch User Repository ArchWiki page for more details.|<a href='https://wiki.archlinux.org/index.php/Arch_User_Repository#Submitting_packages'>|</a>" %}
+			</p>
+
+			{% if has_fingerprints %}
+			<p>
+			{% trans "The following SSH fingerprints are used for the AUR:" %}
+			</p>
+			<ul>
+				{% for typ, fp in fingerprints.items %}
+				<li><code>{% autoescape on %}{{ typ }}{% endautoescape %}</code>: <code>{% autoescape on %}{{ fp }}{% endautoescape %}</code></li>
+				{% endfor %}
+			</ul>
+			{% endif %}
+
+		</div>
+
+		<h4>{% trans "Discussion" %}</h4>
+		<div class="article-content">
+
+			<p>
+			{% trans_args "General discussion regarding the Arch User Repository (AUR) and Trusted User structure takes place on {}aur-general{}. For discussion relating to the development of the AUR web interface, use the {}aur-dev{} mailing list.|<a href='https://mailman.archlinux.org/mailman/listinfo/aur-general'>|</a>|<a href='https://mailman.archlinux.org/mailman/listinfo/aur-dev'>|</a>" %}
+			</p>
+		</div>
+
+		<h4>{% trans "Bug Reporting" %}</h4>
+		<div class="article-content">
+			<p>
+			{% trans_args "If you find a bug in the AUR web interface, please fill out a bug report on our {}bug tracker{}. Use the tracker to report bugs in the AUR web interface {}only{}. To report packaging bugs contact the package maintainer or leave a comment on the appropriate package page.|<a href='https://bugs.archlinux.org/index.php?project=2'>|</a>|<strong>|</strong>" %}
+			</p>
+		</div>
+  </div>
+
+  {% endif %}
+
+  </div>
+</div>
+<div id="content-right">
+  <div id="pkgsearch" class="widget">
+    <form id="pkgsearch-form" class="widget" method="get" action="/packages/">
+      <fieldset>
+        <label for="pkgsearch-form">{% trans "Package Search" %}:</label>
+        <input type="hidden" name="O" value="0" />
+        <input id="pkgsearch-field" type="text" name="K" size="30" maxlength="35" autocomplete="off" />
+      </fieldset>
+    </form>
+  </div>
+
+  <div id="pkg-updates" class="widget box">
+    <h3>
+			{% trans "Recent Updates" %}
+      <span class="more">(<a href="/packages/?SB=l&SO=d">more</a>)</span>
+    </h3>
+    <a href="/rss/" title="Arch Package Updates RSS Feed" class="rss-icon">
+      <img src={% static "images/rss.svg" %} alt="RSS Feed" />
+    </a>
+    <table>
+      <tbody>
+          {% for pkg in recent_updates %}
+          <tr>
+						<td class="pkg-name">
+							<a href="/pkgbase/{{ pkg|get_item:"name"|urlencode }}/">
+								{{ pkg|get_item:"name" }} {{ pkg|get_item:"version" }}
+							</a>
+						</td>
+						<td class="pkg-date">
+							<span>{{ pkg|get_item:"updated_at" }}</span>
+						</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div id="pkg-stats" class="widget box">
+    <h3>{% trans "Statistics" %}</h3>
+    <table>
+      <tbody>
+        {% for stat, value in stats.items %}
+				<tr>
+					<td class="stat-desc">{% trans stat %}</td>
+					<td>{{ value }}</td>
+				</tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}
+
