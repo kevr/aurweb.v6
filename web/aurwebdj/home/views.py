@@ -19,7 +19,7 @@ if not aurweb.config._parser:
   except: pass
 
 def sum_packages_from_base(bases):
-  return sum([len(base.packages.all()) for base in bases])
+  return sum([base.packages.all().count() for base in bases])
 
 class HomeView(View):
   def get(self, request, **kwargs):
@@ -54,6 +54,8 @@ class HomeView(View):
           "version": pkg.version,
           "updated_at": pkgbase.modified_at.strftime("%Y-%m-%d %H:%M")
         })
+    # Truncate, we only need 15 for home page
+    updates = updates[15:]
 
     pkgs = sum_packages_from_base(pkgs)
 
