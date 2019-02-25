@@ -3,7 +3,7 @@
 {% load i18n %}
 {% load trans_args %}
 
-{% block ptitle %}{% trans "Home" %}{% endblock %}
+{% block ptitle %}{% if request.user.is_authenticated %}{% trans "Dashboard" %}{% else %}{% trans "Home" %}{% endif %}{% endblock %}
 
 {% block content %}
 
