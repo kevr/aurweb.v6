@@ -19,8 +19,9 @@ def aur_render(request, path, ctx={}):
 
   if AURUser.objects.filter(uid=request.user.id).exists():
     user = AURUser.objects.get(user_ptr=request.user)
-    user.lang_preference = request_lang
-    user.save()
+    if user.lang_preference != request_lang:
+      user.lang_preference = request_lang
+      user.save()
     ctx["lang"] = user.lang_preference
   else:
     lang_pref = "en"
@@ -31,11 +32,7 @@ def aur_render(request, path, ctx={}):
   translation.activate(ctx["lang"])
   request.session[translation.LANGUAGE_SESSION_KEY] = ctx["lang"]
 
-  print("Activated language: %s" % ctx["lang"])
-  print("Django language: %s" % translation.get_language())
-  print("From eng: %s" % translation.gettext_lazy("My test; Please read."))
-
-
+  # Give our list or supported languages
   ctx["languages"] = LANGUAGES
 
   response = render(request, path, ctx)
