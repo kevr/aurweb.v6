@@ -55,7 +55,7 @@ class HomeView(View):
           "updated_at": pkgbase.modified_at.strftime("%Y-%m-%d %H:%M")
         })
     # Truncate, we only need 15 for home page
-    updates = updates[15:]
+    updates = updates[:15]
 
     pkgs = Package.objects.count()
 
