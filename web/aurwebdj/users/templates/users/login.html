@@ -1,0 +1,45 @@
+{% extends "aurbase.html" %}
+{% load i18n %}
+{% load trans_args %}
+
+{% block ptitle %}AUR {% trans "Login" %}{% endblock %}
+
+{% block content %}
+<div id="dev-login" class="box">
+  <h2>AUR {% trans "Login" %}</h2>
+  <form method="post" action="/login/">
+    <fieldset>
+      <legend>Enter login credentials</legend>
+
+      {% if errors %}
+      <ul class="errorlist">
+        {% for error in errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      <p>
+        <label for="id_username">User name or email address:</label>
+        <input id="id_username" type="text" name="user" size="30" maxlength="254" autofocus="autofocus" />
+      </p>
+      <p>
+        <label for="id_password">Password:</label>
+        <input id="id_password" type="password" name="passwd" size="30" />
+      </p>
+      <p>
+        <input type="checkbox" name="remember_me" id="id_remember_me" />
+        <label for="id_remember_me">Remember me</label>
+      </p>
+      <p>
+        <input type="submit" class="button" value="Login" />
+        <a href="/passreset/">[Forgot Password]</a>
+        <input id="id_referer" type="hidden" name="referer"
+               value="https://aur.archlinux.org/login/" />
+        {% csrf_token %}
+      </p>
+    </fieldset>
+  </form>
+</div>
+{% endblock %}
+

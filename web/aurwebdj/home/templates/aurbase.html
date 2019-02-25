@@ -1,0 +1,128 @@
+{% load static %}
+{% load i18n %}
+{% load trans_args %}
+<!DOCTYPE html>
+<html lang='{{ lang|default:"en" }}'>
+
+  <head>
+    <!-- To set a - Subtitle portion of a page, use block ptitle -->
+    <title>AUR ({{ lang|default:"en" }}) - {% block ptitle %}Home{% endblock %}</title>
+
+    <!-- Icon -->
+    <link rel="shortcut icon" href="{% static "images/favicon.ico" %}" />
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{% static "css/archweb.css" %}" />
+    <link rel="stylesheet" href="{% static "css/aurweb.css" %}" />
+
+    <!-- Scripts -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+    <!-- Metadata -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+
+  <body>
+    <div id="archnavbar" class="anb-aur">
+      <div id="archnavbarlogo">
+        <h1>
+          <a href="/" title="Return to the main page">Arch Linux User Repository</a>
+        </h1>
+      </div>
+      <div id="archnavbarmenu">
+        <ul id="archnavbarlist">
+          <li id="anb-home">
+            <a href="https://www.archlinux.org/"
+               title="Arch news, packages, projects and more">Home</a>
+          </li>
+          <li id="anb-packages">
+            <a href="https://www.archlinux.org/packages/"
+               title="Arch Package Database">Packages</a>
+          </li>
+          <li id="anb-forums">
+            <a href="https://bbs.archlinux.org/"
+               title="Community forums">Forums</a>
+          </li>
+          <li id="anb-wiki">
+            <a href="https://wiki.archlinux.org/"
+               title="Community documentation">Wiki</a>
+          </li>
+          <li id="anb-bugs">
+            <a href="https://bugs.archlinux.org"
+               title="Report and track bugs">Bugs</a>
+          </li>
+          <li id="anb-security">
+            <a href="https://security.archlinux.org/"
+               title="Arch Linux Security Tracker">Security</a>
+          </li>
+          <li id="anb-aur">
+            <a href="https://aur.archlinux.org/"
+               title="Arch Linux User Repository">AUR</a>
+          </li>
+          <li id="anb-download">
+            <a href="https://www.archlinux.org/download/"
+               title="Get Arch Linux">Download</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="content">
+      <div id="lang_sub">
+        <form method="post" action="/">
+          <fieldset>
+            <div>
+              <select name="setlang" id="id_setlang">
+                {% for code, label in languages.items %}
+                {% if code == lang|default:"en" %}
+                <option value="{{ code }}" selected="selected">{{ label }}</option>
+                {% else %}
+                <option value="{{ code }}">{{ label }}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+              {% csrf_token %}
+              <input type="submit" value="Go" />
+            </div>
+          </fieldset>
+        </form>
+      </div>
+      <div id="archdev-navbar">
+        <ul>
+
+          {% if request.user.is_authenticated %}
+          <li><a href="/">Dashboard</a></li>
+          <li><a href="/packages/">Packages</a></li>
+          <!-- Only viewable by someone who can view Requests... TU ? -->
+          <li><a href="/requests/">Requests</a></li>
+          <li><a href="/accounts/">Accounts</a></li>
+          <li><a href="/account/{{ request.user.username }}/edit/">My Account</a></li>
+          <li><a href="/tu/">Trusted User</a></li>
+          <li><a href="/logout/">Logout</a></li>
+
+          {% else %}
+          <li><a href="/">AUR Home</a></li>
+          <li><a href="/packages/">Packages</a></li>
+          <li><a href="/register/">Register</a></li>
+          <li><a href="/login/">Login</a></li>
+          {% endif %}
+
+        </ul>
+      </div>
+      
+      {% block content %}
+      {% endblock %}
+
+      <div id="footer">
+        <p><a href="https://git.kevr.tk/aurweb.v6.git/">aurweb-next</a></p>
+        </p>
+        <p>Copyright &copy; 2004-2019 aurweb Development Team.</p>
+        <p>{% trans "AUR packages are user produced content. Any use of the provided files is at your own risk." %}</p>
+      </div>
+    </div>
+
+  <script type="text/javascript" src={% static "js/bootstrap-typeahead.min.js" %}></script>
+  </body>
+
+</html>
+
