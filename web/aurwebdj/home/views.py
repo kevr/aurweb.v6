@@ -38,11 +38,10 @@ class HomeView(View):
 
     registered_users = AURUser.objects.count()
     
-    tu_type = AURAccountType.objects.get(name="Trusted User")
-    tu_dev_type = AURAccountType.objects.get(name="Trusted User & Developer")
+    tu_types = AURAccountType.objects.filter(
+        Q(name="Trusted User") | Q(name="Trusted User & Developer"))
 
-    tu_users = AURUser.objects.filter(
-        Q(account_type=tu_type) | Q(account_type=tu_dev_type)).count()
+    tu_users = AURUser.objects.filter(account_type__in=tu_types).count()
 
     recent_updates = pkgs.order_by("-modified_at")[:15]
 
