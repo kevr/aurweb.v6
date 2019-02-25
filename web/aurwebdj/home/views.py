@@ -88,10 +88,6 @@ class HomeView(View):
     })
 
   def post(self, request):
-    setlang = None
-    if "setlang" in request.POST:
-      setlang = request.POST["setlang"]
-
     return self.get(request)
 
 # Create your views here.
