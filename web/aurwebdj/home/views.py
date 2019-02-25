@@ -82,8 +82,8 @@ class HomeView(View):
       }
 
     flagged_pkgs = None
-    maintained_pkgs = None
-    comaintained_pkgs = None
+    my_pkgs = None
+    co_pkgs = None
     if request.user.is_authenticated:
       flagged_pkgs = []
       my_pkgs = []

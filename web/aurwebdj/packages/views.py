@@ -234,15 +234,13 @@ class PackagesView(View):
 
     current_page = int(pp / o) if o != 0 else 1
 
-    pkg_count = Package.objects.count()
     return aur_render(request, "packages/index.html", {
       "sort_by_options": self.sort_by_string,
       "search_by_options": self.search_by_string,
       "results": results,
-      "resultcount": n,
       "pages": pages,
       "current_page": current_page,
-      "package_count": pkg_count,
+      "package_count": n,
     })
 
 

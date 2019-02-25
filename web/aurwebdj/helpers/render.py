@@ -9,7 +9,8 @@ from users.models import AURUser, AURAccountType
 LANGUAGES = getDict()
 
 def aur_render(request, path, ctx={}):
-  if AURUser.objects.filter(user_ptr=request.user).exists():
+  if request.user.is_authenticated \
+  and AURUser.objects.filter(user_ptr=request.user).exists():
     auruser = AURUser.objects.get(user_ptr=request.user)
     if "user" not in ctx:
       ctx["user"] = auruser

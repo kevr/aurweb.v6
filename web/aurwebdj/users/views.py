@@ -17,10 +17,52 @@ class AccountView(View):
       "user": auruser
     })
 
+class AccountsView(View):
+  def denied(self, request):
+    return aur_render(request, "access_denied.html", {
+      "page_title": "Accounts",
+      "msg": "You do not have permission to view this page."
+    })
+
+  def get(self, request):
+    auruser = None
+    if request.user.is_authenticated:
+      auruser = AURUser.objects.filter(user_ptr=request.user)
+    if auruser and auruser.exists():
+      auruser = auruser[0]
+    else:
+      return self.denied(request)
+
+    if auruser.account_type.name != "Trusted User" \
+    and auruser.account_type.name != "Trusted User & Developer":
+      return self.denied(request)
+
+    return aur_render(request, "users/accounts.html")
+
+  def post(self, request):
+    return aur_render(request, "users/accounts.html")
+
 class EditAccountView(View):
   def get(self, request, username):
-    auruser = get_object_or_404(AURUser, username=username)
-    current_auruser = get_object_or_404(AURUser, user_ptr=request.user)
+    auruser = None
+    current_auruser = None
+
+    if AURUser.objects.filter(username=username).exists():
+      auruser = AURUser.objects.get(username=username)
+    if AURUser.objects.filter(user_ptr=request.user).exists():
+      current_auruser = AURUser.objects.get(user_ptr=request.user)
+
+    if not auruser:
+      return aur_render(request, "404.html")
+
+    is_tu = current_auruser.account_type.name == "Trusted User" \
+        or current_auruser.account_type.name == "Trusted User & Developer"
+
+    if auruser != current_auruser and not is_tu:
+      return aur_render(request, "access_denied.html", {
+        "page_title": "Accounts"
+      })
+
     return aur_render(request, "users/edit.html", {
       "user": auruser,
       "current_user": current_auruser
