@@ -66,17 +66,17 @@
 
       {% else %}
       <!-- Unauthenticated users get a welcoming to the AUR -->
-			<h2>AUR {% trans "Home" %}</h2>
-			<p>
-			{% trans_args "Welcome to the AUR! Please read the {}AUR User Guidelines{} and {}AUR TU Guidelines{} for more information.|<a href='https://wiki.archlinux.org/index.php/AUR_User_Guidelines'>|</a>|<a href='https://wiki.archlinux.org/index.php/AUR_Trusted_User_Guidelines'>|</a>" %}
-			{% trans_args "Contributed PKGBUILDs {}must{} conform to the {}Arch Packaging Standards{} otherwise they will be deleted!|<strong>|</strong>|<a href='https://wiki.archlinux.org/index.php/Arch_Packaging_Standards'>|</a>" %}
-			{% trans "Remember to vote for your favourite packages!" %}
-			{% trans "Some packages may be provided as binaries in [community]." %}
-			</p>
-			<p class="important">
-				{% trans "DISCLAIMER" %}:
-				{% trans "AUR packages are user produced content. Any use of the provided files is at your own risk." %}
-			</p>
+      <h2>AUR {% trans "Home" %}</h2>
+      <p>
+      {% trans_args "Welcome to the AUR! Please read the {}AUR User Guidelines{} and {}AUR TU Guidelines{} for more information.|<a href='https://wiki.archlinux.org/index.php/AUR_User_Guidelines'>|</a>|<a href='https://wiki.archlinux.org/index.php/AUR_Trusted_User_Guidelines'>|</a>" %}
+      {% trans_args "Contributed PKGBUILDs {}must{} conform to the {}Arch Packaging Standards{} otherwise they will be deleted!|<strong>|</strong>|<a href='https://wiki.archlinux.org/index.php/Arch_Packaging_Standards'>|</a>" %}
+      {% trans "Remember to vote for your favourite packages!" %}
+      {% trans "Some packages may be provided as binaries in [community]." %}
+      </p>
+      <p class="important">
+        {% trans "DISCLAIMER" %}:
+        {% trans "AUR packages are user produced content. Any use of the provided files is at your own risk." %}
+      </p>
 
       <p class="readmore"><a href="https://wiki.archlinux.org/index.php/AUR">{% trans "Learn more..." %}</a></p>
       {% endif %}
@@ -263,7 +263,7 @@
 
   <div id="pkg-updates" class="widget box">
     <h3>
-			{% trans "Recent Updates" %}
+      {% trans "Recent Updates" %}
       <span class="more">(<a href="/packages/?SB=l&SO=d">more</a>)</span>
     </h3>
     <a href="/rss/" title="Arch Package Updates RSS Feed" class="rss-icon">
@@ -273,14 +273,14 @@
       <tbody>
           {% for pkg in recent_updates %}
           <tr>
-						<td class="pkg-name">
-							<a href="/pkgbase/{{ pkg|get_item:"name"|urlencode }}/">
-								{{ pkg|get_item:"name" }} {{ pkg|get_item:"version" }}
-							</a>
-						</td>
-						<td class="pkg-date">
-							<span>{{ pkg|get_item:"updated_at" }}</span>
-						</td>
+            <td class="pkg-name">
+              <a href="/pkgbase/{{ pkg|get_item:"name"|urlencode }}/">
+                {{ pkg|get_item:"name" }} {{ pkg|get_item:"version" }}
+              </a>
+            </td>
+            <td class="pkg-date">
+              <span>{{ pkg|get_item:"updated_at" }}</span>
+            </td>
           </tr>
           {% endfor %}
       </tbody>
@@ -292,10 +292,10 @@
     <table>
       <tbody>
         {% for stat, value in stats.items %}
-				<tr>
-					<td class="stat-desc">{% trans stat %}</td>
-					<td>{{ value }}</td>
-				</tr>
+        <tr>
+          <td class="stat-desc">{% trans stat %}</td>
+          <td>{{ value }}</td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
