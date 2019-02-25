@@ -21,6 +21,10 @@ class LoginView(View):
       errors.append("Bad username or password.")
       return self.render(request, errors)
 
+    if not AURUser.objects.filter(username=username).exists():
+      errors.append("Bad username or password.")
+      return self.render(request, errors)
+
     auruser = AURUser.objects.get(username=username)
 
     if not auruser.check_password(passwd):
@@ -29,7 +33,7 @@ class LoginView(View):
 
     login(request, auruser)
 
-    return HttpResponseRedirect('/')
+    return HttpResponseRedirect("/")
 
   def render(self, request, errors=None):
     if errors:
