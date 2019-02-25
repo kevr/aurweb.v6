@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login, logout, get_user_model
@@ -9,6 +9,26 @@ from helpers.render import aur_render
 from users.models import AURUser, AURAccountType
 
 User = get_user_model()
+
+class AccountView(View):
+  def get(self, request, username):
+    auruser = get_object_or_404(AURUser, username=username)
+    return aur_render(request, "users/account.html", {
+      "user": auruser
+    })
+
+class EditAccountView(View):
+  def get(self, request, username):
+    auruser = get_object_or_404(AURUser, username=username)
+    current_auruser = get_object_or_404(AURUser, user_ptr=request.user)
+    return aur_render(request, "users/edit.html", {
+      "user": auruser,
+      "current_user": current_auruser
+    })
+
+class DeleteAccountView(View):
+  def get(self, request, username):
+    return aur_render(request, "users/delete.html")
 
 class UpdateView(View):
   def post(self, request):
@@ -26,7 +46,7 @@ class UpdateView(View):
       response.set_cookie(settings.LANGUAGE_COOKIE_NAME, request.POST["setlang"])
       return response
 
-    return HttpResponseRedirect("/")
+    return HttpResponseRedirect(_next if _next else "/")
 
 class LoginView(View):
   def get(self, request):

@@ -1,5 +1,8 @@
 *.pyc
 .*.pyc
-
+*.orig
+*.mo
 db.sqlite3
 venv/
+00*.py
+

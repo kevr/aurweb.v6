@@ -1,0 +1,33 @@
+{% extends "aurbase.html" %}
+{% load static %}
+{% load i18n %}
+{% load trans_args %}
+{% load user_tags %}
+
+{% block ptitle %}{% if user == current_user or request.user|is_tu %}Editing {{ user.username }}{% else %}Access Denied{% endif %}{% endblock %}
+
+{% block content %}
+<div class="box">
+
+  <h2>{% trans "Accounts" %}</h2>
+  <p>
+  {% with user.username|urlencode as encoded_user %}
+
+  {% with "Click {}here{} if you want to permanently delete this account.|<a href='/account/"|add:encoded_user|add:"/delete/'>|</a>" as perm_del %}
+  {% trans_args perm_del %}
+  {% endwith %}
+
+  {% with "Click {}here{} for user details.|<a href='/account/"|add:encoded_user|add:"/'>|</a>" as user_page %}
+  {% trans_args user_page %}
+  {% endwith %}
+
+  {% with "Click {}here{} to list the comments made by this account.|<a href='/account/"|add:encoded_user|add:"/comments/'>|</a>" as comment_page %}
+  {% trans_args comment_page %}
+  {% endwith %}
+
+  {% endwith %}
+  </p>
+
+</div>
+{% endblock %}
+

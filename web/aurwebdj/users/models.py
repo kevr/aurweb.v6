@@ -52,6 +52,12 @@ class AURUser(User):
         self.uid = last_id + 1
     super().save(*args, **kwargs)
 
+  def voted(self, pkgbase):
+    return PackageVote.objects.\
+        filter(user=self).\
+        filter(package_base=pkgbase).\
+        exists()
+
 class Ban(models.Model):
   ip_address = models.CharField(max_length=45, primary_key=True)
   banned_at = models.DateTimeField(default=timezone.now)

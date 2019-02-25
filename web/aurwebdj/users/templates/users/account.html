@@ -1,0 +1,54 @@
+{% extends "aurbase.html" %}
+{% load static %}
+{% load i18n %}
+{% load trans_args %}
+{% load user_tags %}
+
+{% block ptitle %}{{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="box">
+
+  <h2>{% trans "Accounts" %}</h2>
+  <table class="arch-bio-entry">
+    <tbody>
+      <tr>
+        <td>
+          <h3>{{ user.username }}</h3>
+          <table class="bio">
+            <tbody>
+              <tr><th>{% trans "Username" %}:</th><td>{{ user.username }}</td></tr>
+              <tr><th>{% trans "Account Type" %}:</th><td>{{ user.account_type.name }}</td></tr>
+              {% if not user.hide_email %}
+              <tr><th>{% trans "Email Address" %}:</th><td><a href="mailto:{{ user.email|urlencode }}">{{ user.email }}</a></td></tr>
+              {% endif %}
+              <tr><th>{% trans "Homepage" %}:</th><td>{{ user.homepage }}</td></tr>
+              <tr><th>{% trans "IRC Nick" %}:</th><td>{{ user.irc_nick }}</td></tr>
+              <tr><th>{% trans "PGP Key Fingerprint" %}:</th><td>{{ user.pgp_key }}</td></tr>
+              <tr><th>{% trans "Status" %}:</th><td>{% if user.is_active %}Active{% else %}Inactive{% endif %}</td></tr>
+              <tr><th>{% trans "Registration date" %}:</th><td>{{ user.registered_at|date:"Y-m-d" }}</td></tr>
+              <tr>
+                <th>{% trans "Links" %}:</th>
+                <td>
+                  <ul>
+                    <li><a href="/packages/?K={{ user.username|urlencode }}&SeB=m">View this user's packages</a></li>
+
+                    <!-- If this user page is our own page, or we are a TU -->
+                    {% if request.user|aur == user or request.user|is_tu %}
+                    <li><a href="/account/{{ user.username|urlencode }}/edit/">Edit this user's account</a></li>
+                    {% endif %}
+
+                    <li><a href="/account/{{ user.username|urlencode }}/comments/">List this user's comments</a></li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+{% endblock %}
+

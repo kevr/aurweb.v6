@@ -18,7 +18,7 @@ urlpatterns = [
   # path("pkgbase/<pkgname>/",
   # path("packages/<pkgname>/", PackageView.as_view(), name="package"),
 
-  # path("packages/", PackagesView.as_view(), name="packages"),
+  path("packages/", PackagesView.as_view(), name="packages"),
 ]
 
 

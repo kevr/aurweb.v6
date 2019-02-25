@@ -10,8 +10,9 @@ urlpatterns = [
   # path("account/<user>/comments/", UserCommentsView.as_view(), name="user_comments"),
   # account/<user>/update/ may be removed in favor of GET+POST account/<user>/edit/
   # path("account/<user>/update/" UserUpdateView.as_view(), name="user_update"),
-  # path("account/<user>/edit/", UserEditView.as_view(), name="user_edit"),
-  # path("account/<user>/", UserView.as_view(), name="user"),
+  path("account/<username>/delete/", DeleteAccountView.as_view(), name="user_delete"),
+  path("account/<username>/edit/", EditAccountView.as_view(), name="user_edit"),
+  path("account/<username>/", AccountView.as_view(), name="user"),
   # path("tu/", TrustedUserView.as_view(), name="tu"),
 ]
 

@@ -75,16 +75,44 @@ class HomeView(View):
       "Trusted Users": tu_users
     })
 
-    fingerprints = {
-      k.upper() : aurweb.config.get("fingerprints", k)
-      for k in aurweb.config._parser["fingerprints"]
-    }
+    fingerprints = []
+    if not request.user.is_authenticated:
+      fingerprints = {
+        k.upper() : aurweb.config.get("fingerprints", k)
+        for k in aurweb.config._parser["fingerprints"]
+      }
+
+    flagged_pkgs = None
+    maintained_pkgs = None
+    comaintained_pkgs = None
+    if request.user.is_authenticated:
+      flagged_pkgs = []
+      my_pkgs = []
+      co_pkgs = []
+      auruser = AURUser.objects.get(user_ptr=request.user)
+      # Some sorting through our user's packages for pretty output
+      for pkgbase in auruser.flagged.all():
+        for pkg in pkgbase.packages.all():
+          flagged_pkgs.append(pkg)
+      for pkgbase in auruser.maintained.all().order_by("-modified_at"):
+        for pkg in pkgbase.packages.all():
+          my_pkgs.append(pkg)
+      for pkg in auruser.comaintained.all():
+        bases = [pkg.package_base for pkg in co_pkgs]
+        co_pkgs = []
+        bases = sorted(bases, key=lambda e: e.modified_at).reverse()
+        for base in bases:
+          for pkg in base.packages.all():
+            co_pkgs.append(pkg)
 
     return aur_render(request, "home/index.html", {
       "recent_updates": updates,
       "stats": stats,
       "has_fingerprints": len(fingerprints) > 0,
-      "fingerprints": fingerprints
+      "fingerprints": fingerprints,
+      "flagged_pkgs": flagged_pkgs,
+      "maintained_pkgs": my_pkgs,
+      "comaintained_pkgs": co_pkgs,
     })
 
   def post(self, request):

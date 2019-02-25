@@ -18,11 +18,11 @@ class PackageBase(models.Model):
   flagger_comment = models.CharField(max_length=255, default="")
 
   maintainer = models.ForeignKey(AURUser, on_delete=models.DO_NOTHING,
-      primary_key=False, null=True, blank=True, related_name="maintained_bases")
+      primary_key=False, null=True, blank=True, related_name="maintained")
   packager = models.ForeignKey(AURUser, on_delete=models.DO_NOTHING,
-      primary_key=False, null=True, blank=True, related_name="package_bases")
+      primary_key=False, null=True, blank=True, related_name="pkgbases")
   submitter = models.ForeignKey(AURUser, on_delete=models.DO_NOTHING,
-      primary_key=False, null=True, blank=True, related_name="submitted_bases")
+      primary_key=False, null=True, blank=True, related_name="submitted")
 
 # An AUR package
 class Package(models.Model):

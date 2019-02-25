@@ -1,0 +1,34 @@
+{% extends "aurbase.html" %}
+{% load static %}
+{% load i18n %}
+{% load trans_args %}
+{% load user_tags %}
+
+{% block ptitle %}{% trans "Accounts" %}{% endblock %}
+
+{% block content %}
+<div class="box">
+  <h2>{% trans "Accounts" %}</h2>
+  {% with "<strong>"|add:user.username|add:"</strong>" as user_str %}
+  <p>{% trans_args "You can use this form to permanently delete the AUR account {}.|"|add:user_str %}</p>
+  {% endwith %}
+
+  <p>{% trans_args "{}WARNING{}: This action cannot be undone.|<strong>|</strong>" %}</p>
+
+  <form id="edit-profile-form" action="/account/{{ user.username|urlencode }}/delete/" method="post">
+    <fieldset>
+      {% csrf_token %}
+      <p>
+        <label class="confirmation">
+          <input type="checkbox" name="confirm" value="1" />
+          {% trans "Confirm deletion" %}
+        </label>
+      </p>
+      <p>
+        <input type="submit" class="button" value="Delete" />
+      </p>
+    </fieldset>
+  </form>
+</div>
+{% endblock %}
+

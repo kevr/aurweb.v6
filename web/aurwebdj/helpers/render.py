@@ -35,6 +35,11 @@ def aur_render(request, path, ctx={}):
   # Give our list or supported languages
   ctx["languages"] = LANGUAGES
 
+  if request.user.is_authenticated:
+    if not "user" in ctx:
+      ctx["user"] = AURUser.objects.get(user_ptr=request.user)
+    ctx["is_authenticated"] = True
+
   response = render(request, path, ctx)
   if set_lang:
     response.set_cookie(settings.LANGUAGE_COOKIE_NAME, ctx["lang"])
