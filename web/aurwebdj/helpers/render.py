@@ -9,39 +9,21 @@ from users.models import AURUser, AURAccountType
 LANGUAGES = getDict()
 
 def aur_render(request, path, ctx={}):
-  request_lang = request.session[translation.LANGUAGE_SESSION_KEY]
-  set_lang = False
-
-  if request.method.upper() == "POST":
-    if "setlang" in request.POST:
-      request_lang = request.POST["setlang"]
-      set_lang = True
-
-  if AURUser.objects.filter(uid=request.user.id).exists():
-    user = AURUser.objects.get(user_ptr=request.user)
-    if user.lang_preference != request_lang:
-      user.lang_preference = request_lang
-      user.save()
-    ctx["lang"] = user.lang_preference
+  if AURUser.objects.filter(user_ptr=request.user).exists():
+    auruser = AURUser.objects.get(user_ptr=request.user)
+    if "user" not in ctx:
+      ctx["user"] = auruser
+    ctx["is_authenticated"] = True
+    ctx["lang"] = auruser.lang_preference
   else:
-    lang_pref = "en"
-    if request_lang:
-      lang_pref = request_lang
-    ctx["lang"] = lang_pref
+    # When unauthenticated, we try to get "lang" from the session
+    # with a default of "en"
+    ctx["is_authenticated"] = False
+    ctx["lang"] = request.session.get(translation.LANGUAGE_SESSION_KEY, "en")
 
   translation.activate(ctx["lang"])
-  request.session[translation.LANGUAGE_SESSION_KEY] = ctx["lang"]
-
-  # Give our list or supported languages
   ctx["languages"] = LANGUAGES
 
-  if request.user.is_authenticated:
-    if not "user" in ctx:
-      ctx["user"] = AURUser.objects.get(user_ptr=request.user)
-    ctx["is_authenticated"] = True
+  return render(request, path, ctx)
 
-  response = render(request, path, ctx)
-  if set_lang:
-    response.set_cookie(settings.LANGUAGE_COOKIE_NAME, ctx["lang"])
-  return response
 
