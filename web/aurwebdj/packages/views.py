@@ -1,11 +1,39 @@
 from django.shortcuts import render
 from django.views import View
 from django.db.models import Q, F
+from collections import OrderedDict
 
 from helpers.render import aur_render
 from packages.models import *
 
+'''
+@class PackagesView
+@brief Main search page at /packages/.
+'''
 class PackagesView(View):
+  search_by_string = {
+    "nd": "Name, Description",
+    "n": "Name only",
+    "N": "Exact name",
+    "m": "Maintainer",
+    "M": "Maintainer, Co-Maintainer",
+    "b": "Package Base",
+    "B": "Exact Package Base",
+    "k": "Keyword",
+    "c": "Co-maintainer",
+    "s": "Submitter"
+  }
+
+  sort_by_string = {
+    "n": "Name",
+    "v": "Votes",
+    "p": "Popularity",
+    "w": "Voted",
+    "o": "Notify",
+    "m": "Maintainer",
+    "l": "Last Modified"
+  }
+
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
 
@@ -22,34 +50,14 @@ class PackagesView(View):
       "s": self.search_by_submitter
     }
 
-    self.search_by_string = {
-      "n": "Name only",
-      "N": "Exact name",
-      "nd": "Name, Description",
-      "m": "Maintainer",
-      "b": "Package Base",
-      "B": "Exact Package Base",
-      "k": "Keyword",
-      "c": "Co-maintainer",
-      "s": "Submitter"
-    }
-
+    # key values for sorted(...); we also support 'w' and 'o',
+    # however, they require further model introspection later.
     self.sort_by = {
       "n": lambda e: e.name,
       "v": lambda e: e.votes,
       "p": lambda e: e.popularity,
       "m": lambda e: e.package_base.maintainer.username,
       "l": lambda e: e.modified_at,
-    }
-
-    self.sort_by_string = {
-      "n": "Name",
-      "v": "Votes",
-      "p": "Popularity",
-      "w": "Voted",
-      "o": "Notify",
-      "m": "Maintainer",
-      "l": "Last Modified"
     }
 
   def search_by_name(self, keywords):
@@ -199,7 +207,6 @@ class PackagesView(View):
 
     sb = request.GET.get("SB", "n")
     if sb in self.sort_by:
-      print("sort_by: %s" % str(self.sort_by[sb]))
       results = sorted(results, key=self.sort_by[sb])
     elif sb == "w": # Voted?
       if request.user.is_authenticated:
@@ -243,4 +250,21 @@ class PackagesView(View):
       "package_count": n,
     })
 
+'''
+@class PackageView
+@brief View a single package's details.
+'''
+class PackageView(View):
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+
+  def get(self, request, pkgname):
+    pkg = Package.objects.filter(name=pkgname)
+    if not pkg.exists():
+      return aur_render(request, "404.html")
+    return aur_render(request, "packages/package.html", {
+      "pkg": pkg[0],
+      "search_by_options": PackagesView.search_by_string,
+      "sort_by_options": PackagesView.sort_by_string,
+    })
 

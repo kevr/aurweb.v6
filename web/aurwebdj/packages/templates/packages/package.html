@@ -1,0 +1,44 @@
+{% extends "aurbase.html" %}
+{% load static %}
+{% load i18n %}
+{% load trans_args %}
+{% load user_tags %}
+
+{% block ptitle %}{{ pkg.name }}{% endblock %}
+
+{% block content %}
+
+{% include "packages/search_critera.html" %}
+
+<div id="pkgdetails" class="box">
+  <h2>{% trans "Package Details" %}: {{ pkg.name }} {{ pkg.version }}</h2>
+
+  <div id="detailslinks" class="listing">
+    <div id="actionlist">
+      <h4>{% trans "Package Actions" %}</h4>
+      <ul class="small">
+        <li>
+          {% trans_args "{}View PKGBUILD{}|<a href='/cgit/aur.git/tree/PKGBUILD?h="|add:pkg.name|add:"'>|</a>" %}
+          {% trans_args "{}View Changes{}|<a href='https://aur.archlinux.org/cgit/aur.git/log/?h="|add:pkg.name|add:"'>|</a>" %}
+        </li>
+        <li>
+          {% trans_args "{}Download snapshot{}|<a href='/cgit/aur.git/snapshot/"|add:pkg.name|add:".tar.gz'>|</a>" %}
+        </li>
+        <li>
+          {% trans_args "{}Search wiki{}|<a href='https://wiki.archlinux.org/index.php/Special:Search?search="|add:pkg.name|add:"'>|</a>" %}
+        </li>
+        <li>
+          {% trans_args "{}Flag package out-of-date{}|<a href='/packages/"|add:pkg.name|add:"/flag/'>|</a>" %}
+        </li>
+        <li>
+          {% trans_args "{}Vote for this package{}|<a href='/packages/"|add:pkg.name|add:"/vote/'>|</a>" %}
+        </li>
+        <li>
+          {% trans_args "{}Disable notifications{}|<a href='/packages/
+        </li>
+      </ul>
+  </div>
+
+</div>
+{% endblock %}
+

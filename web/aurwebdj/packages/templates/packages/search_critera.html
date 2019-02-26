@@ -1,0 +1,71 @@
+{% load i18n %}
+{% load trans_args %}
+{% load user_tags %}
+
+<div id="pkglist-search" class="box filter-criteria">
+  <h2>{% trans "Search Criteria" %}</h2>
+  <form method="get" action="/packages/">
+    <p><input type="hidden" name="O" value="0" /></p>
+    <fieldset>
+      <legend>{% trans "Enter search criteria" %}</legend>
+
+      <div>
+        <label for="id_method">Search by</label>
+        <select name="SeB">
+          {% for val, str in search_by_options.items %}
+          <option value="{{ val }}"{% if val == request.GET|get_item:"SeB" %} selected="selected"{% endif %}>{{ str }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label for="id_q">Keywords</label>
+        <input type="text" name="K" size="30" value="{{ request.GET|get_item:"K" }}" maxlength="35" />
+      </div>
+
+      <div>
+        <label for="id_out_of_date">Out of Date</label>
+        <select name="outdated">
+          <option value="">All</option>
+          <option value="on">Flagged</option>
+          <option value="off">Not Flagged</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="id_sort_by">Sort by</label>
+        <select name="SB">
+          {% for val, label in sort_by_options.items %}
+          <option value="{{ val }}"{% if val == request.GET|get_item:"SB" %} selected="selected"{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label for="id_order_by">Sort order</label>
+        <select name="SO">
+          <option value="a"{% if request.GET|get_item:"SO" == "a" %} selected="selected"{% endif %}>Ascending</option>
+          <option value="d"{% if request.GET|get_item:"SO" == "d" %} selected="selected"{% endif %}>Descending</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="id_per_page">Per page</label>
+        <select name="PP">
+          <option value="50"{% if request.GET|get_item:"PP" == "50" %} selected="selected"{% endif %}>50</option>
+          <option value="100"{% if request.GET|get_item:"PP" == "100" %} selected="selected"{% endif %}>100</option>
+          <option value="250"{% if request.GET|get_item:"PP" == "250" %} selected="selected"{% endif %}>250</option>
+        </select>
+      </div>
+
+      <div>
+        <label>&nbsp;</label>
+        <input type="submit" class="button" name="do_Search" value="Go" />
+        <input type="submit" class="button" name="do_Orphans" value="Orphans" />
+      </div>
+
+    </fieldset>
+  </form>
+</div>
+
+

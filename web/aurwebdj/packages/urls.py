@@ -16,8 +16,8 @@ urlpatterns = [
   # path("pkgbase/<pkgname>/comaintainers/",
   # path("pkgbase/<pkgname>/flag/",
   # path("pkgbase/<pkgname>/",
-  # path("packages/<pkgname>/", PackageView.as_view(), name="package"),
 
+  path("packages/<pkgname>/", PackageView.as_view(), name="package"),
   path("packages/", PackagesView.as_view(), name="packages"),
 ]
 
