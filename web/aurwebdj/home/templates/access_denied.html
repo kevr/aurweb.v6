@@ -1,0 +1,15 @@
+{% extends "aurbase.html" %}
+{% load static %}
+{% load i18n %}
+{% load trans_args %}
+{% load user_tags %}
+
+{% block ptitle %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="box">
+  <h2>{{ page_title }}</h2>
+  <p>{% trans msg|default:"You do not have permission to edit this account." %}</p>
+</div>
+{% endblock %}
+

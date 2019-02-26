@@ -1,0 +1,13 @@
+{% extends "aurbase.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block ptitle %}Page Not Found{% endblock %}
+
+{% block content %}
+<div class="box">
+  <h2>404 - {% trans "Page Not Found" %}</h2>
+  <p>{% trans "Sorry, the page you've requested does not exist." %}</p>
+</div>
+{% endblock %}
+
