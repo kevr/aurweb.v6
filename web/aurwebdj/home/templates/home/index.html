@@ -274,7 +274,7 @@
           {% for pkg in recent_updates %}
           <tr>
             <td class="pkg-name">
-              <a href="/pkgbase/{{ pkg|get_item:"name"|urlencode }}/">
+              <a href="/packages/{{ pkg|get_item:"name"|urlencode }}/">
                 {{ pkg|get_item:"name" }} {{ pkg|get_item:"version" }}
               </a>
             </td>

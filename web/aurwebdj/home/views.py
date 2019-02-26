@@ -12,11 +12,14 @@ import aurweb.config
 from helpers.render import aur_render
 from packages.models import Package, PackageBase
 from users.models import AURUser, AURAccountType
+import configparser
 
 # Force load of aurweb
 if not aurweb.config._parser:
-  try: aurweb.config.get('', '')
-  except: pass
+  try:
+    aurweb.config.get('', '')
+  except configparser.NoSectionError:
+    pass
 
 def sum_packages_from_base(bases):
   return sum([base.packages.all().count() for base in bases])
@@ -74,7 +77,7 @@ class HomeView(View):
       "Trusted Users": tu_users
     })
 
-    fingerprints = []
+    fingerprints = dict()
     if not request.user.is_authenticated:
       fingerprints = {
         k.upper() : aurweb.config.get("fingerprints", k)
@@ -97,9 +100,10 @@ class HomeView(View):
         for pkg in pkgbase.packages.all():
           my_pkgs.append(pkg)
       for pkg in auruser.comaintained.all():
-        bases = [pkg.package_base for pkg in co_pkgs]
-        co_pkgs = []
-        bases = sorted(bases, key=lambda e: e.modified_at).reverse()
+        # Just cast it to a set quickly and morph it into a list
+        # after getting rid of unique package_bases
+        bases = list(set(pkg.package_base for pkg in co_pkgs))
+        bases = sorted(bases, key=lambda e: e.modified_at, reverse=True)
         for base in bases:
           for pkg in base.packages.all():
             co_pkgs.append(pkg)
