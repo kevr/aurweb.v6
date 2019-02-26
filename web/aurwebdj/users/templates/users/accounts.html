@@ -1,0 +1,78 @@
+{% extends "aurbase.html" %}
+{% load static %}
+{% load i18n %}
+{% load trans_args %}
+{% load user_tags %}
+
+{% block ptitle %}Accounts{% endblock %}
+
+{% block content %}
+<div class="box">
+  <h2>{% trans "Accounts" %}</h2>
+  <p>{% trans "Use this form to search existing accounts." %}</p>
+
+  <form action="/accounts/" method="post">
+    <fieldset>
+      <p>
+        <label for="id_username">{% trans "Username" %}:</label>
+        <input type="text" size="30" maxlength="64" name="U" id="id_username" />
+      </p>
+
+      <p>
+        <label for="id_type">{% trans "Account Type" %}:</label>
+        <select name="T" id="id_type">
+          <option value="0">Any type</option>
+          <option value="1">Normal User</option>
+          <option value="2">Trusted User</option>
+          <option value="3">Developer</option>
+          <option value="4">Trusted User &amp; Developer</option>
+        </select>
+      </p>
+
+      <p>
+        <!-- Account suspended -->
+        <label for="id_suspended">{% trans "Account Suspended" %}:</label>
+        <input type="checkbox" name="S" id="id_suspended" />
+      </p>
+
+      <p>
+        <!-- Email Address -->
+        <label for="id_email">{% trans "Email Address" %}:</label>
+        <input type="email" size="30" maxlength="64" name="E" id="id_email" />
+      </p>
+
+      <p>
+        <!-- Real Name -->
+        <label for="id_realname">{% trans "Real Name" %}:</label>
+        <input type="text" size="30" maxlength="64" name="R" id="id_realname" />
+      </p>
+
+      <p>
+        <!-- IRC Nick -->
+        <label for="id_ircnick">{% trans "IRC Nick" %}:</label>
+        <input type="text" size="30" maxlength="64" name="R" id="id_ircnick" />
+      </p>
+
+      <p>
+        <label for="id_sortby">{% trans "Sort by" %}:</label>
+        <select name="SB" id="id_sortby">
+          <option value="u">Username</option>
+          <option value="t">Account Type</option>
+          <option value="r">Real Name</option>
+          <option value="i">IRC Nick</option>
+        </select>
+        <!-- Sort By (SB) -->
+      </p>
+
+      <p>
+        <!-- Search/Reset -->
+        <label></label>
+        <input type="submit" value="Search" />
+        <input type="reset" value="Reset" />
+      </p>
+
+    </fieldset>
+  </form>
+</div>
+{% endblock %}
+
