@@ -161,7 +161,7 @@ class OfficialProvider(models.Model):
 
   @property
   def name(self):
-    return package.name
+    return self.package.name
 
   repo = models.CharField(max_length=64)
   provides = models.CharField(max_length=64)
