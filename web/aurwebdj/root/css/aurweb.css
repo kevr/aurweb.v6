@@ -16,6 +16,11 @@
     margin: 0 .25em;
 }
 
+.pkglist-nav a.page:link,
+.pkglist-nav a.page:visited {
+  color: #07b;
+}
+
 #pkg-stats td.stat-desc {
   white-space: normal;
 }
@@ -206,6 +211,21 @@ label.confirmation,
 	#archdev-navbar {
 		text-align: center;
 	}
+
+}
+
+.pkglist-stats {
+  position: relative;
+}
+
+#pkglist-results .pkglist-nav {
+  float: none !important;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin-top: 0;
+  margin: auto;
 
 }
 
