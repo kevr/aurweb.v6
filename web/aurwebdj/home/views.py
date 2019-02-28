@@ -94,7 +94,7 @@ class HomeView(View):
       auruser = AURUser.objects.get(user_ptr=request.user)
       # Some sorting through our user's packages for pretty output
       for pkgbase in auruser.flagged.all():
-        for pkg in pkgbase.packages.all():
+        for pkg in pkgbase.packages.all().order_by("-modified_at"):
           flagged_pkgs.append(pkg)
       for pkgbase in auruser.maintained.all().order_by("-modified_at"):
         for pkg in pkgbase.packages.all():

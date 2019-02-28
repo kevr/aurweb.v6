@@ -22,7 +22,7 @@ class AURUser(User):
   lang_preference = models.CharField(max_length=6, default="en")
   
   tz = models.CharField(max_length=32, default="UTC")
-  homepage = models.TextField()
+  homepage = models.TextField(null=True, blank=True, default="")
   irc_nick = models.CharField(max_length=32, default="")
   pgp_key = models.CharField(max_length=40, null=True, blank=True)
   
