@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 from django.shortcuts import render
-from django.utils import translation
+from django.utils import translation, timezone
 from django.conf import settings
+import calendar
 
-from helpers.lang import getDict
+import helpers.lang
 from users.models import AURUser, AURAccountType
 
-LANGUAGES = getDict()
+make_aware = timezone.make_aware
 
 def aur_render(request, path, ctx={}):
   if request.user.is_authenticated \
@@ -23,7 +24,10 @@ def aur_render(request, path, ctx={}):
     ctx["lang"] = request.session.get(translation.LANGUAGE_SESSION_KEY, "en")
 
   translation.activate(ctx["lang"])
-  ctx["languages"] = LANGUAGES
+  ctx["languages"] = helpers.lang.LANGUAGES
+
+  dt = timezone.now()
+  ctx["ts"] = calendar.timegm(dt.timetuple())
 
   return render(request, path, ctx)
 
