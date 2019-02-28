@@ -28,13 +28,28 @@
           {% trans_args "{}Search wiki{}|<a href='https://wiki.archlinux.org/index.php/Special:Search?search="|add:pkg.name|add:"'>|</a>" %}
         </li>
         <li>
+          {% if pkg.package_base.out_of_date_at == None %}
           {% trans_args "{}Flag package out-of-date{}|<a href='/packages/"|add:pkg.name|add:"/flag/'>|</a>" %}
+          {% else %}
+          {% trans_args "{}Unflag package{}|<a href='/packages/"|add:pkg.name|add:"/unflag/'>|</a>" %}
+          {% endif %}
         </li>
         <li>
+          {% if user|voted:pkg.package_base %}
+          {% trans_args "{}Remove vote{}|<a href='/packages/"|add:pkg.name|add:"/unvote/'>|</a>" %}
+          {% else %}
           {% trans_args "{}Vote for this package{}|<a href='/packages/"|add:pkg.name|add:"/vote/'>|</a>" %}
+          {% endif %}
         </li>
         <li>
-          {% trans_args "{}Disable notifications{}|<a href='/packages/
+          {% if user|notify:pkg.package_base %}
+          {% trans_args "{}Disable notifications{}|<a href='/packages/"|add:pkg.name|add:"/unnotify/'>|</a>" %}
+          {% else %}
+          {% trans_args "{}Enable notifications{}|<a href='/packages/"|add:pkg.name|add:"/notify/'>|</a>" %}
+          {% endif %}
+        </li>
+        <li>
+          {% trans_args "{}Submit Request{}|<a href='/packages/"|add:pkg.name|add:"/request/'>|</a>" %}
         </li>
       </ul>
   </div>
