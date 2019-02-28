@@ -58,9 +58,10 @@ def convert_datetime(orig):
 #   exactly the source row's provided keyword arguments.
 def create_if_not(Object, **kwargs):
   global created_objects
-  if not Object.objects.filter(**kwargs).exists():
-    created_objects.append(Object.objects.create(**kwargs))
-    return True
+  obj = None
+  try: obj = Object.objects.create(**kwargs)
+  except: pass
+  created_objects.append(obj)
 
 def to_users_auraccounttype(row, db):
   _id, name = row
@@ -304,7 +305,7 @@ def to_packages_packagevote(row, db):
   user = AURUser.objects.get(uid=user_id)
   pkgbase = PackageBase.objects.get(pk=pkgbase_id)
   if create_if_not(PackageVote, user=user,
-      package_base=pkgbase, voted_at=convert_datetime(vote_ts)):
+      package_base=pkgbase, created_at=convert_datetime(vote_ts)):
     print("%s copied" % str(row))
 
 def to_users_sshpubkey(row, db):
@@ -475,12 +476,16 @@ def main(setup):
       rows = cursor.fetchall()
       for row in rows:
         v["function"](row, db)
+
+      print("\nDone copying %d rows!\n" % len(rows))
   except Exception as exc:
+    '''
     print("Caught fatal exception while running migration; rerolling stack...")
     created_objects.reverse()
     for obj in created_objects:
       print("Deleting %s" % str(obj))
       obj.delete()
+    '''
     print("Exception occurred: %s" % str(exc))
 
   return 0
