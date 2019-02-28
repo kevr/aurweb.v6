@@ -191,8 +191,9 @@ label.confirmation,
 	font-weight: normal;
 }
 
-#pkglist-results-form {
-  overflow-x: scroll;
+#pkglist-results-form,
+.scroll {
+  overflow-x: auto;
 }
 
 @media screen and (max-width: 720px) {

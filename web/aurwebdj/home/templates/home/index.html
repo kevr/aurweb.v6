@@ -16,44 +16,46 @@
       <h2>{% trans "Dashboard" %}</h2>
       <h3>{% trans "My Flagged Packages" %}</h3>
       {% if flagged_pkgs %}
-      <table class="results">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Version</th>
-            <th>Votes</th>
-            <th>Popularity</th>
-            <th>Voted</th>
-            <th>Notify</th>
-            <th>Description</th>
-            <th>Maintainer</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for pkg in flagged_pkgs %}
-          <tr class="{% if forloop.counter|divisibleby:2 %}odd{% else %}even{% endif %}">
-            <td>
-              <a href="/packages/{{ pkg.name|urlencode }}/">{{ pkg.name }}</a>
-            </td>
-            <td>
-              {{ pkg.version }}
-            </td>
-            <td>
-              {{ pkg.package_base.num_votes }}
-            </td>
-            <td>
-              {{ pkg.package_base.popularity }}
-            </td>
-            <td>
-              {% if user|voted:pkg.package_base %}Yes{% else %}No{% endif %}
-            </td>
-            <td></td>
-            <td class="wrap">{{ pkg.description }}</td>
-            <td><a href="/account/{{ pkg.package_base.maintainer.username|urlencode }}/">{{ pkg.package_base.maintainer.username }}
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <div class="scroll">
+        <table class="results">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Version</th>
+              <th>Votes</th>
+              <th>Popularity</th>
+              <th>Voted</th>
+              <th>Notify</th>
+              <th>Description</th>
+              <th>Maintainer</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pkg in flagged_pkgs %}
+            <tr class="{% if forloop.counter|divisibleby:2 %}odd{% else %}even{% endif %}">
+              <td>
+                <a href="/packages/{{ pkg.name|urlencode }}/">{{ pkg.name }}</a>
+              </td>
+              <td>
+                {{ pkg.version }}
+              </td>
+              <td>
+                {{ pkg.package_base.num_votes }}
+              </td>
+              <td>
+                {{ pkg.package_base.popularity }}
+              </td>
+              <td>
+                {% if user|voted:pkg.package_base %}Yes{% else %}No{% endif %}
+              </td>
+              <td></td>
+              <td class="wrap">{{ pkg.description }}</td>
+              <td><a href="/account/{{ pkg.package_base.maintainer.username|urlencode }}/">{{ pkg.package_base.maintainer.username }}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
       {% else %}
       <p>{% trans "No packages matched your search criteria." %}</p>
       {% endif %}
@@ -153,46 +155,48 @@
       <p><a href="/packages/?SeB=m&K={{ request.user.username }}&SO=n&PP=50">Search for packages I maintain</a></p>
 
       {% if maintained_pkgs %}
-      <table class="results">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Version</th>
-            <th>Votes</th>
-            <th>Popularity</th>
-            <th>Voted</th>
-            <th>Notify</th>
-            <th>Description</th>
-            <th>Maintainer</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for pkg in maintained_pkgs %}
-          <tr class="{% if forloop.counter|divisibleby:2 %}odd{% else %}even{% endif %}">
-            <td>
-              <a href="/packages/{{ pkg.name|urlencode }}/">{{ pkg.name }}</a>
-            </td>
-            <td>
-              {{ pkg.version }}
-            </td>
-            <td>
-              {{ pkg.package_base.num_votes }}
-            </td>
-            <td>
-              {{ pkg.package_base.popularity }}
-            </td>
-            <td>
-              {% if user|voted:pkg.package_base %}Yes{% else %}No{% endif %}
-            </td>
-            <td>
-              {% if user|notify:pkg.package_base %}Yes{% else %}No{% endif %}
-            </td>
-            <td class="wrap">{{ pkg.description }}</td>
-            <td><a href="/account/{{ pkg.package_base.maintainer.username|urlencode }}/">{{ pkg.package_base.maintainer.username }}
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <div class="scroll">
+        <table class="results">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Version</th>
+              <th>Votes</th>
+              <th>Popularity</th>
+              <th>Voted</th>
+              <th>Notify</th>
+              <th>Description</th>
+              <th>Maintainer</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pkg in maintained_pkgs %}
+            <tr class="{% if forloop.counter|divisibleby:2 %}odd{% else %}even{% endif %}">
+              <td>
+                <a href="/packages/{{ pkg.name|urlencode }}/">{{ pkg.name }}</a>
+              </td>
+              <td>
+                {{ pkg.version }}
+              </td>
+              <td>
+                {{ pkg.package_base.num_votes }}
+              </td>
+              <td>
+                {{ pkg.package_base.popularity }}
+              </td>
+              <td>
+                {% if user|voted:pkg.package_base %}Yes{% else %}No{% endif %}
+              </td>
+              <td>
+                {% if user|notify:pkg.package_base %}Yes{% else %}No{% endif %}
+              </td>
+              <td class="wrap">{{ pkg.description }}</td>
+              <td><a href="/account/{{ pkg.package_base.maintainer.username|urlencode }}/">{{ pkg.package_base.maintainer.username }}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
 
       {% else %}
       <p>{% trans "No packages matched your search criteria." %}</p>
@@ -206,41 +210,44 @@
       <p><a href="/packages/?SeB=c&K={{ request.user.username }}&SO=n&PP=50">Search for packages I co-maintain</a></p>
 
       {% if comaintained_pkgs %}
-      <table class="results">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Version</th>
-            <th>Votes</th>
-            <th>Popularity</th>
-            <th>Voted</th>
-            <th>Notify</th>
-            <th>Description</th>
-            <th>Maintainer</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for pkg in comaintained_pkgs %}
-          <tr class="{% if forloop.counter|divisibleby:2 %}odd{% else %}even{% endif %}">
-            <td>
-              <a href="/packages/{{ pkg.name|urlencode }}/">{{ pkg.name }}</a>
-            </td>
-            <td>
-              {{ pkg.version }}
-            </td>
-            <td>
-              {{ pkg.package_base.num_votes }}
-            </td>
-            <td>
-              {{ pkg.package_base.popularity }}
-            </td>
-            <td></td>
-            <td></td>
-            <td class="wrap">{{ pkg.description }}</td>
-            <td><a href="/account/{{ pkg.package_base.maintainer.username|urlencode }}/">{{ pkg.package_base.maintainer.username }}
-          </tr>
+      <div class="scroll">
+        <table class="results">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Version</th>
+              <th>Votes</th>
+              <th>Popularity</th>
+              <th>Voted</th>
+              <th>Notify</th>
+              <th>Description</th>
+              <th>Maintainer</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pkg in comaintained_pkgs %}
+            <tr class="{% if forloop.counter|divisibleby:2 %}odd{% else %}even{% endif %}">
+              <td>
+                <a href="/packages/{{ pkg.name|urlencode }}/">{{ pkg.name }}</a>
+              </td>
+              <td>
+                {{ pkg.version }}
+              </td>
+              <td>
+                {{ pkg.package_base.num_votes }}
+              </td>
+              <td>
+                {{ pkg.package_base.popularity }}
+              </td>
+              <td></td>
+              <td></td>
+              <td class="wrap">{{ pkg.description }}</td>
+              <td><a href="/account/{{ pkg.package_base.maintainer.username|urlencode }}/">{{ pkg.package_base.maintainer.username }}
+            </tr>
           {% endfor %}
-
+          </tbody>
+        </table>
+      </div>
       {% else %}
       <p>{% trans "No packages matched your search criteria." %}</p>
       {% endif %}
