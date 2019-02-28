@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views import View
 from django.db.models import Q, F
+from django.core.paginator import Paginator
 from collections import OrderedDict
 
 from helpers.render import aur_render
@@ -54,10 +55,10 @@ class PackagesView(View):
     # however, they require further model introspection later.
     self.sort_by = {
       "n": lambda e: e.name,
-      "v": lambda e: e.votes,
-      "p": lambda e: e.popularity,
-      "m": lambda e: e.package_base.maintainer.username,
-      "l": lambda e: e.modified_at,
+      "v": lambda e: e.package_base.num_votes,
+      "p": lambda e: e.package_base.popularity,
+      "m": lambda e: e.package_base.maintainer.username if e.package_base.maintainer else '',
+      "l": lambda e: e.package_base.modified_at,
     }
 
   def search_by_name(self, keywords):
@@ -120,9 +121,7 @@ class PackagesView(View):
   def search_by_keywords(self, keywords):
     bases = []
     for kwd in keywords:
-      try: pkg_keyword = PackageKeyword.objects.filter(keyword=kwd)
-      except: continue
-      bases.append(pkg_keyword.package_base)
+      bases = list(PackageKeyword.objects.filter(keyword=kwd))
     pkgs = []
     for base in bases:
       for pkg in base.packages.all():
@@ -134,8 +133,7 @@ class PackagesView(View):
     for kwd in keywords:
       try: comaintainer = AURUser.objects.get(username=kwd)
       except: continue
-      for base in comaintainer.comaintained.all():
-        bases.append(base)
+      bases = list(comaintainer.comaintained.all())
     pkgs = []
     for base in bases:
       for pkg in base.packages.all():
@@ -147,16 +145,14 @@ class PackagesView(View):
     for kwd in keywords:
       try: maintainer = AURUser.objects.get(username=kwd)
       except: continue
-      for base in PackageBase.objects.filter(maintainer=maintainer):
-        bases.append(base)
+      bases = list(PackageBase.objects.filter(maintainer=maintainer))
       try: comaintainer = AURUser.objects.get(username=kwd)
       except: continue
-      for base in comaintainer.comaintained.all():
-        bases.append(base)
+      bases += list(comaintainer.comaintained.all())
     pkgs = []
     for base in bases:
       for pkg in base.packages.all():
-        pkgs.append(base)
+        pkgs.append(pkg)
     return pkgs
 
   def search_by_submitter(self, keywords):
@@ -164,8 +160,7 @@ class PackagesView(View):
     for kwd in keywords:
       try: submitter = AURUser.objects.get(username=kwd)
       except: continue
-      for base in PackageBase.objects.filter(submitter=submitter):
-        bases.append(base)
+      bases = PackageBase.objects.filter(submitter=submitter)
     pkgs = []
     for base in bases:
       for pkg in base.packages.all():
@@ -174,14 +169,28 @@ class PackagesView(View):
 
   def get(self, request):
 
+    try:
+      o = int(request.GET.get("O", 0))
+    except ValueError as exc:
+      o = 0
+
+    try:
+      pp = int(request.GET.get("PP", 50))
+    except ValueError as exc:
+      pp = 50
+
+    # Sane defaults
+    SeB = "nd"
+    SB = "n"
+    SO = "a"
+
     # Keywords
     K = request.GET.get("K", None)
     results = []
     if not K:
-      pkgbases = PackageBase.objects.all().order_by("-modified_at")
-      for pkgbase in pkgbases:
-        for pkg in pkgbase.packages.all():
-          results.append(pkg)
+      # 50 -> default PP
+      results = sorted(Package.objects.all(),
+          key=lambda k: k.package_base.modified_at, reverse=True)
     else:
       # Search By: default nd (name-desc)
       SeB = request.GET.get("SeB", "nd")
@@ -205,49 +214,66 @@ class PackagesView(View):
       if SeB in self.search_by: 
         results = self.search_by[SeB](terms)
 
-    sb = request.GET.get("SB", "n")
-    if sb in self.sort_by:
-      results = sorted(results, key=self.sort_by[sb])
-    elif sb == "w": # Voted?
+    SB = request.GET.get("SB", "n")
+    if SB in self.sort_by:
+      results = sorted(results, key=self.sort_by[SB])
+    elif SB == "w": # Voted?
       if request.user.is_authenticated:
         user = AURUser.objects.get(user_ptr=request.user)
-        results = sorted(results, key=lambda e: PackageVote.objects\
-            .filter(package_base=e.package_base).filter(user=user).exists())
-    elif sb == "o": # Notify?
+        results = sorted(results, key=lambda e: int(PackageVote.objects\
+            .filter(package_base=e.package_base).filter(user=user).exists()),
+          reverse=True)
+    elif SB == "o": # Notify?
       if request.user.is_authenticated:
         user = AURUser.objects.get(user_ptr=request.user)
-        results = sorted(results, key=lambda e: PackageNotification.objects\
-            .filter(package_base=e.package_base).filter(user=user).exists())
+        results = sorted(results, key=lambda e: int(PackageNotification.objects\
+            .filter(package_base=e.package_base).filter(user=user).exists()),
+            reverse=True)
 
-    so = request.GET.get("SO", "a")
-    if so == "d":
+    SO = request.GET.get("SO", "a")
+    if SO == "d":
       results.reverse()
 
-    try:
-      o = int(request.GET.get("O", 0))
-    except ValueError as exc:
-      o = 0
-
-    try:
-      pp = int(request.GET.get("PP", 50))
-    except ValueError as exc:
-      pp = 50
-
     n = len(results)
-    pages = int(n / pp) + 1
 
-    # Cut from o (o = start) until o + pp (o = start, pp = pagination)
+    paginator = Paginator(results, pp)
+
+    x = int(o / pp) # current page number
+    if x == 0:
+      x = 1
+    print("Page: %d" % x)
+    page = paginator.get_page(x)
+    print("Page #: %d" % page.number)
+
     results = results[o:o + pp]
 
-    current_page = int(pp / o) if o != 0 else 1
+    nav_lhs = None
+    if page.number > 1:
+      if page.number > 2:
+        nav_lhs = range(page.number - 2, page.number)
+      else:
+        nav_lhs = range(page.number - 1, page.number)
+
+    nav_rhs = None
+    if paginator.num_pages > page.number:
+      if paginator.num_pages > page.number + 1:
+        nav_rhs = range(page.number + 1, page.number + 3)
+      else:
+        nav_rhs = range(page.number + 1, page.number + 2)
+
+    qs = "?O=%s&SeB=%s&K=%s&SB=%s&SO=%s&PP=%s" % (
+      o, SeB, K if K else '', SB, SO, pp
+    )
 
     return aur_render(request, "packages/index.html", {
       "sort_by_options": self.sort_by_string,
       "search_by_options": self.search_by_string,
-      "results": results,
-      "pages": pages,
-      "current_page": current_page,
+      "page": page,
       "package_count": n,
+      "pp": pp,
+      "nav_lhs": nav_lhs,
+      "nav_rhs": nav_rhs,
+      "qs": qs
     })
 
 '''

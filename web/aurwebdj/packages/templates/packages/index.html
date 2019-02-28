@@ -1,51 +1,85 @@
 {% extends "aurbase.html" %}
 {% load i18n %}
 {% load trans_args %}
+{% load dict_items %}
 
-{% block ptitle %}{% trans "Search Criteria" %}{% if K %}: {{ K }}{% endif %}{% endblock %}
+{% block ptitle %}{% trans "Search Criteria" %}{% if request.GET|get_item:"K" %}: {{ K }}{% endif %}{% endblock %}
 
 {% block content %}
 <div id="pkglist-results" class="box">
   {% include "packages/search_criteria.html" %}
   <div class="pkglist-stats">
-    <p>{{ package_count }} packages found. Page {{ current_page }} of {{ pages }}.</p>
+    <p>{{ package_count }} packages found. Page {{ page.number }} of {{ page.paginator.num_pages }}.</p>
+    <p class="pkglist-nav">
+      <a class="page" href="{{ qs }}&O=0">{% trans "First" %}</a>
+      {% if page.has_previous %}
+      <a class="page" href="{{ qs }}&O={{ page.previous_page_number|mul:pp }}">{% trans "Previous" %}</a>
+      {% endif %}
+
+      {% if nav_lhs %}
+      {% for i in nav_lhs %}
+      <a class="page" href="{{ qs }}&O={{ i|mul:pp }}">{{ i }}</a>
+      {% endfor %}
+      {% endif %}
+
+      <span class="page">{{ page.number }}</span>
+
+      {% if nav_rhs %}
+      {% for i in nav_rhs %}
+      <a class="page" href="{{ qs }}&O={{ i|mul:pp }}">{{ i }}</a>
+      {% endfor %}
+      {% endif %}
+
+      {% if page.has_next %}
+      <a class="page" href="{{ qs }}&O={{ page.next_page_number|mul:pp }}">{% trans "Next" %}</a>
+      {% endif %}
+      <a class="page" href="{{ qs }}&O={{ page.paginator.num_pages|mul:pp }}">{% trans "Last" %}</a>
+    </p>
   </div>
 
   <form id="pkglist-results-form" method="post" action="/pkgbase/?O=0&SeB=n">
     <table class="results">
       <thead>
         <tr>
+          {% if user|is_tu %}
           <th>&nbsp;</th>
-          <th><a href="?O=0&SeB=n&SB=n&SO=a">{% trans "Name" %}</a></th>
+          {% endif %}
+          <th><a href="{{ qs }}&SB=n">{% trans "Name" %}</a></th>
           <th>{% trans "Version" %}</th>
-          <th><a href="?O=0&SeB=n&SB=v&SO=a">{% trans "Votes" %}</a></th>
+          <th><a href="{{ qs }}&SB=v">{% trans "Votes" %}</a></th>
           <th>
-            <a href="?O=0&SeB=n&SB=p&SO=a">{% trans "Popularity" %}</a>
+            <a href="{{ qs }}&SB=p">{% trans "Popularity" %}</a>
             <span title='{% trans "Popularity is calculated as the sum of all votes with each vote being weighted with a factor of 0.98 per day since its creation." %}' class="hover-help"><sup>?</sup></span>
           </th>
-          <th><a href="?O=0&SeB=n&SB=w&SO=a">{% trans "Voted" %}</a></th>
-          <th><a href="?O=0&SeB=n&SB=o&SO=a">{% trans "Notify" %}</a></th>
+          <th><a href="{{ qs }}&SB=w">{% trans "Voted" %}</a></th>
+          <th><a href="{{ qs }}&SB=o">{% trans "Notify" %}</a></th>
           <th>{% trans "Description" %}</th>
-          <th><a href="?O=0&SeB=n&SB=m&SO=a">{% trans "Maintainer" %}</a></th>
+          <th><a href="{{ qs }}&SB=m">{% trans "Maintainer" %}</a></th>
         </tr>
       </thead>
 
       <tbody>
-        {% for pkg in results %}
+        {% for pkg in page %}
         <tr class="{% if forloop.counter|divisibleby:2 %}odd{% else %}even{% endif %}">
+          {% if user|is_tu %}
           <td>
-            <input type="checkbox" name="ids_{{ forloop.counter }}" />
+            <input type="checkbox" name="ID{{ pkg.id }}" />
           </td>
+          {% endif %}
           <td>
             <a href="/packages/{{ pkg.name|urlencode }}/">{{ pkg.name }}</a>
           </td>
           <td>{{ pkg.version }}</td>
-          <td>{{ pkg.package_base.votes.count }}</td>
+          <td>{{ pkg.package_base.num_votes }}</td>
           <td>{{ pkg.package_base.popularity }}</td>
-          <td></td>
-          <td></td>
-          <td class="wrap">{{ pkg.description }}</td>
-          <td><a href="/account/{{ pkg.package_base.maintainer.username|urlencode }}/" title="View account information for {{ pkg.package_base.maintainer.username }}">{{ pkg.package_base.maintainer.username }}</a></td>
+          <td>{% if user|voted:pkg.package_base %}Yes{% else %}No{% endif %}</td>
+          <td>{% if user|notify:pkg.package_base %}Yes{% else %}No{% endif %}</td>
+          <td class="wrap">{{ pkg.description|default:"" }}</td>
+          <td>
+            {% if pkg.package_base.maintainer %}
+            <a href="/account/{{ pkg.package_base.maintainer.username|urlencode }}/" title="View account information for {{ pkg.package_base.maintainer.username }}">{{ pkg.package_base.maintainer.username }}</a>
+            {% endif %}
+          </td>
         </tr>
         {% endfor %}
       </tbody>

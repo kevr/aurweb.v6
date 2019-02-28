@@ -9,8 +9,10 @@ class PackageBase(models.Model):
   name = models.CharField(max_length=255)
   popularity = models.FloatField(default=0.0)
 
-  submitted_at = models.DateTimeField(default=timezone.now)
-  modified_at = models.DateTimeField(default=timezone.now)
+  submitted_at = models.DateTimeField(
+      default=timezone.now)
+  modified_at = models.DateTimeField(
+      default=timezone.now)
 
   out_of_date_at = models.DateTimeField(null=True, blank=True)
   flagger = models.ForeignKey(AURUser, on_delete=models.DO_NOTHING,
@@ -31,8 +33,12 @@ class Package(models.Model):
 
   name = models.CharField(max_length=255)
   version = models.CharField(max_length=255)
-  description = models.CharField(max_length=255, default="")
+  description = models.CharField(max_length=255, default="", null=True, blank=True)
   url = models.CharField(max_length=255, null=True, blank=True)
+
+  @property
+  def modified_at(self):
+    return package_base.modified_at
 
 class License(models.Model):
   name = models.CharField(max_length=255, unique=True)
@@ -54,8 +60,8 @@ class PackageDependency(models.Model):
       related_name="package_deps")
 
   name = models.CharField(max_length=255)
-  desc = models.CharField(max_length=255, default="")
-  condition = models.CharField(max_length=255, default="")
+  desc = models.CharField(max_length=255, default="", null=True, blank=True)
+  condition = models.CharField(max_length=255, default="", null=True, blank=True)
   arch = models.CharField(max_length=255, null=True, blank=True)
 
 class PackageSource(models.Model):
@@ -69,7 +75,8 @@ class PackageVote(models.Model):
       related_name="votes")
   package_base = models.ForeignKey(PackageBase, on_delete=models.CASCADE,
       related_name="votes", primary_key=False)
-  created_at = models.DateTimeField(default=timezone.now)
+  created_at = models.DateTimeField(
+      default=timezone.now, null=True, blank=True)
 
 class PackageComments(models.Model):
   package_base = models.ForeignKey(PackageBase, on_delete=models.CASCADE,
@@ -78,7 +85,8 @@ class PackageComments(models.Model):
       related_name="comments", primary_key=False)
   comment = models.TextField()
   rendered_comment = models.TextField()
-  commented_at = models.DateTimeField(default=timezone.now)
+  commented_at = models.DateTimeField(
+      default=timezone.now)
   edited_at = models.DateTimeField(null=True, blank=True)
   edited_user = models.ForeignKey(AURUser, on_delete=models.DO_NOTHING,
       null=True, blank=True, primary_key=False,
@@ -139,7 +147,8 @@ class PackageRequest(models.Model):
   comments = models.TextField()
   closure_comment = models.TextField()
 
-  requested_at = models.DateTimeField(default=timezone.now)
+  requested_at = models.DateTimeField(
+      default=timezone.now)
   status = models.IntegerField(default=0)
 
 class RelationType(models.Model):
@@ -180,7 +189,7 @@ class TUVoteInfo(models.Model):
 
   yes = models.IntegerField(default=0)
   no = models.IntegerField(default=0)
-  abstrain = models.IntegerField(default=0)
+  abstain = models.IntegerField(default=0)
   active_tus = models.IntegerField(default=0)
 
   submitter = models.ForeignKey(AURUser, on_delete=models.CASCADE,
