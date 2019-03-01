@@ -40,9 +40,9 @@ Django will use:
 	...
 	mysql[NONE]> CREATE DATABASE aurweb CHARACTER SET utf8;
 	...
-	mysql[NONE]> USE aurweb;
+	mysql[aurweb]> GRANT ALL ON aurweb.* TO 'aur'@'localhost'; 
 	...
-	mysql[aurweb]> GRANT ALL ON aurweb TO 'aur'@'localhost'; 
+	mysql[aurweb]> COMMIT;
 
 Then, configure MySQL database information for Django:
 
