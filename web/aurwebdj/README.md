@@ -1,9 +1,28 @@
 <span id="top">aurwebdj</span>
 ------------------------------
 
-_The following TravisCI widget is run off of the most recent commit at [https://github.com/kevr/aurweb.v6](https://github.com/kevr/aurweb.v6)._
+_The following TravisCI widget is run off of the most recent commit
+at [https://github.com/kevr/aurweb.v6](https://github.com/kevr/aurweb.v6)._
 
 [![Build Status](https://travis-ci.com/kevr/aurweb.v6.svg?branch=master)](https://travis-ci.com/kevr/aurweb.v6)
+
+This project is currently in its porting stage of the process. This
+project's development contains a four step process, each of which
+contain subtasks:
+
+1. Port `aurweb[php]` to a Django-driven website `aurwebdj`
+	* Migrate database records from `aurweb[php]` to Django ORM [Done]
+	* Port `$project_root/lib/aurweb` package to Django ORM
+	* Implement HTML components of `aurweb[php]`
+	* Implement API components of `aurweb[php]`
+2. Convert `aurwebdj` to a Django extension
+3. Fix outstanding bugs on the Trello board
+4. Setup `aur.git` in our repository
+5. [Potentially implement new features from the Trello board]
+
+When these steps are completed, with the fifth being optional, the project
+will be submitted to [aur-dev@archlinux.org](mailto:aur-dev@archlinux.org)
+accompanied with a proposal.
 
 <span id="setup">Setup</span>
 -----------------------------
