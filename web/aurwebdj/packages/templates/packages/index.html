@@ -6,8 +6,10 @@
 {% block ptitle %}{% trans "Search Criteria" %}{% if request.GET|get_item:"K" %}: {{ K }}{% endif %}{% endblock %}
 
 {% block content %}
+
+{% include "packages/search_criteria.html" %}
+
 <div id="pkglist-results" class="box">
-  {% include "packages/search_criteria.html" %}
   {% include "packages/pkglist_stats.html" %}
 
   <form id="pkglist-results-form" method="post" action="/pkgbase/?O=0&SeB=n">
