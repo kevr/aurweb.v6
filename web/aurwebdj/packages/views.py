@@ -247,10 +247,24 @@ class PackagesView(View):
 
     results = results[o:o + pp]
 
+    cp, nav_lhs = page, []
+    for i in range(min(5, max(5, paginator.num_pages - page.number - 1))):
+      if cp.number == 1:
+        break
+      print("cp.previous_page_number: %d" % cp.previous_page_number())
+      cp = paginator.get_page(cp.previous_page_number())
+      print("Appending %d to lhs" % cp.number)
+      nav_lhs.append(cp.number)
+    nav_lhs.reverse()
 
-    nav_lhs = range(1, min(5, max(page.number - 1, 0)) + 1)
-
-    nav_rhs = range(page.number + 1, min(paginator.num_pages, page.number + 6) + 1)
+    cp, nav_rhs = page, []
+    for i in range(page.number + 1, min(page.number + 6, paginator.num_pages + 1)):
+      if cp.number == paginator.num_pages:
+        break
+      print("cp.next_page_number: %d" % cp.next_page_number())
+      cp = paginator.get_page(cp.next_page_number())
+      print("Appending %d to rhs" % cp.number)
+      nav_rhs.append(cp.number)
 
     qs = "?O=%s&SeB=%s&K=%s&SB=%s&SO=%s&PP=%s" % (
       o, SeB, K if K else '', SB, SO, pp
