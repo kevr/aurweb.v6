@@ -88,11 +88,12 @@ WSGI_APPLICATION = 'aurwebdj.wsgi.application'
 
 DATABASES = {
     'default': {
+        'NAME': 'aurweb',
         'ENGINE': 'django.db.backends.mysql',
         'OPTIONS': {
           'read_default_file': '/etc/aurweb/my.cnf'
         },
-    }
+    },
 }
 
 
