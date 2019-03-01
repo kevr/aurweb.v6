@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views import View
-from django.db.models import Q, F
+from django.db.models import Q, F, QuerySet
 from django.core.paginator import Paginator
 from collections import OrderedDict
 
@@ -54,118 +54,95 @@ class PackagesView(View):
     # key values for sorted(...); we also support 'w' and 'o',
     # however, they require further model introspection later.
     self.sort_by = {
-      "n": lambda e: e.name,
-      "v": lambda e: e.package_base.num_votes,
-      "p": lambda e: e.package_base.popularity,
-      "m": lambda e: e.package_base.maintainer.username if e.package_base.maintainer else '',
-      "l": lambda e: e.package_base.modified_at,
+      "n": "name",
+      "v": "package_base__num_votes",
+      "p": "package_base__popularity",
+      "m": "package_base__maintainer__username",
+      "l": "package_base__modified_at",
     }
 
   def search_by_name(self, keywords):
-    pkgs = []
-    for kwd in keywords:
-      for pkg in Package.objects.filter(name__contains=kwd):
-        pkgs.append(pkg)
-    return pkgs
+    q = Package.objects.none()
+    for keyword in keywords:
+      q |= Package.objects.filter(name__contains=keyword)
+    return q
 
   def search_by_exact_name(self, keywords):
-    pkgs = []
-    for kwd in keywords:
-      for pkg in Package.objects.filter(name=kwd):
-        pkgs.append(pkg)
-    return pkgs
+    q = Package.objects.none()
+    for keyword in keywords:
+      q |= Package.objects.filter(name=keyword)
+    return q
 
   def search_by_name_desc(self, keywords):
-    pkgs = []
-    for kwd in keywords:
-      for pkg in Package.objects.filter(
-          Q(name__contains=kwd) | Q(description__contains=kwd)):
-        pkgs.append(pkg)
-    return pkgs
+    q = Package.objects.none()
+    for keyword in keywords:
+      q |= Package.objects.filter(
+          Q(name__contains=keyword) | Q(description__contains=keyword))
+    return q
 
   def search_by_base(self, keywords):
-    bases = []
-    for kwd in keywords:
-      for base in PackageBase.objects.filter(name__contains=kwd):
-        bases.append(base)
-    pkgs = []
-    for base in bases:
-      for pkg in base.packages.all():
-        pkgs.append(pkg)
-    return pkgs
+    q = Package.objects.none()
+    for keyword in keywords:
+      q |= Package.objects.filter(package_base__name__contains=keyword)
+    return q
 
   def search_by_exact_base(self, keywords):
-    bases = []
-    for kwd in keywords:
-      for base in PackageBase.objects.filter(name=kwd):
-        bases.append(base)
-    pkgs = []
-    for base in bases:
-      for pkg in base.packages.all():
-        pkgs.append(pkg)
-    return pkgs
+    q = Package.objects.none()
+    for keyword in keywords:
+      q |= Package.objects.filter(package_base__name=keyword)
+    return q
 
   def search_by_maintainer(self, keywords):
-    bases = []
-    for kwd in keywords:
-      try: maintainer = AURUser.objects.get(username=kwd)
-      except: continue
-      for base in PackageBase.objects.filter(maintainer=maintainer):
-        bases.append(base)
-    pkgs = []
-    for base in bases:
-      for pkg in base.packages.all():
-        pkgs.append(pkg)
-    return pkgs
+    q = Package.objects.none()
+    for keyword in keywords:
+      try:
+        maintainer = AURUser.objects.get(username=keyword)
+      except:
+        continue
+      q |= Package.objects.filter(package_base__maintainer=maintainer)
+    return q
 
   def search_by_keywords(self, keywords):
-    bases = []
-    for kwd in keywords:
-      bases = list(PackageKeyword.objects.filter(keyword=kwd))
-    pkgs = []
-    for base in bases:
-      for pkg in base.packages.all():
-        pkgs.append(pkg)
-    return pkgs
+    q = Package.objects.none()
+    for keyword in keywords:
+      for kwd in PackageKeyword.objects.filter(keyword=keyword):
+        q |= kwd.packages.all()
+    return q
 
   def search_by_comaintainer(self, keywords):
-    bases = []
-    for kwd in keywords:
-      try: comaintainer = AURUser.objects.get(username=kwd)
-      except: continue
-      bases = list(comaintainer.comaintained.all())
-    pkgs = []
-    for base in bases:
-      for pkg in base.packages.all():
-        pkgs.append(pkg)
-    return pkgs
+    q = Package.objects.none()
+    for keyword in keywords:
+      try:
+        comaintainer = AURUser.objects.get(username=keyword)
+      except:
+        continue
+      for pkgbase in comaintainer.comaintained.all():
+        q |= pkgbase.packages.all()
+    return q
 
   def search_by_maintainer_comaintainer(self, keywords):
-    bases = []
-    for kwd in keywords:
-      try: maintainer = AURUser.objects.get(username=kwd)
-      except: continue
-      bases = list(PackageBase.objects.filter(maintainer=maintainer))
-      try: comaintainer = AURUser.objects.get(username=kwd)
-      except: continue
-      bases += list(comaintainer.comaintained.all())
-    pkgs = []
-    for base in bases:
-      for pkg in base.packages.all():
-        pkgs.append(pkg)
-    return pkgs
+    q = Package.objects.none()
+    for keyword in keywords:
+      try:
+        maintainer = AURUser.objects.get(username=keyword)
+      except:
+        continue
+      qset = Package.objects.filter(package_base__maintainer=maintainer)
+      for pkgbase in maintainer.comaintained.all():
+        # Run set intersection on querysets
+        qset &= pkgbase.packages.all()
+      q |= qset
+    return q
 
   def search_by_submitter(self, keywords):
-    bases = []
-    for kwd in keywords:
-      try: submitter = AURUser.objects.get(username=kwd)
-      except: continue
-      bases = PackageBase.objects.filter(submitter=submitter)
-    pkgs = []
-    for base in bases:
-      for pkg in base.packages.all():
-        pkgs.append(pkg)
-    return pkgs
+    q = Package.objects.none()
+    for keyword in keywords:
+      try:
+        submitter = AURUser.objects.get(username=keyword)
+      except:
+        continue
+      q |= Package.objects.filter(package_base__submitter=submitter)
+    return q
 
   def get(self, request):
 
@@ -189,8 +166,7 @@ class PackagesView(View):
     results = []
     if not K:
       # 50 -> default PP
-      results = sorted(Package.objects.all(),
-          key=lambda k: k.package_base.modified_at, reverse=True)
+      results = Package.objects.all().order_by("-package_base__name")
     else:
       # Search By: default nd (name-desc)
       SeB = request.GET.get("SeB", "nd")
@@ -214,9 +190,14 @@ class PackagesView(View):
       if SeB in self.search_by: 
         results = self.search_by[SeB](terms)
 
+    SO = request.GET.get("SO", "a")
     SB = request.GET.get("SB", "n")
+
     if SB in self.sort_by:
-      results = sorted(results, key=self.sort_by[SB])
+      results = results.order_by("%s%s" % (
+        "-" if SO == "d" else "",
+        self.sort_by[SB]
+      ))
     elif SB == "w": # Voted?
       if request.user.is_authenticated:
         user = AURUser.objects.get(user_ptr=request.user)
@@ -229,10 +210,6 @@ class PackagesView(View):
         results = sorted(results, key=lambda e: int(PackageNotification.objects\
             .filter(package_base=e.package_base).filter(user=user).exists()),
             reverse=True)
-
-    SO = request.GET.get("SO", "a")
-    if SO == "d":
-      results.reverse()
 
     n = len(results)
 

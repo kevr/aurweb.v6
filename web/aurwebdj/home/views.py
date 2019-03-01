@@ -30,14 +30,18 @@ class HomeView(View):
       user = AURUser.objects.get(user_ptr=request.user)
       lang = user.lang_preference
 
-    pkgs = PackageBase.objects
-    orphaned = pkgs.filter(maintainer=None)
+    orphaned = Package.objects.filter(package_base__maintainer=None)
 
     now = timezone.now()
-    pkgs_added_past_7 = pkgs.filter(submitted_at__gte=(now - timedelta(days=7)))
-    pkgs_mod_past_7 = pkgs.filter(modified_at__gte=(now - timedelta(days=7)))
-    pkgs_mod_past_year = pkgs.filter(modified_at__gte=(now - timedelta(days=365)))
-    pkgs_mod_never = pkgs.filter(modified_at=F("submitted_at"))
+
+    pkgs_added_past_7 = Package.objects.filter(
+        package_base__submitted_at__gte=(now - timedelta(days=7)))
+    pkgs_mod_past_7 = Package.objects.filter(
+        package_base__modified_at__gte=(now - timedelta(days=7)))
+    pkgs_mod_past_year = Package.objects.filter(
+        package_base__modified_at__gte=(now - timedelta(days=365)))
+    pkgs_mod_never = Package.objects.filter(
+        package_base__modified_at=F("package_base__submitted_at"))
 
     registered_users = AURUser.objects.count()
     
@@ -46,33 +50,20 @@ class HomeView(View):
 
     tu_users = AURUser.objects.filter(account_type__in=tu_types).count()
 
-    recent_updates = pkgs.order_by("-modified_at")[:15]
-
-    updates = []
-    for pkgbase in recent_updates:
-      for pkg in pkgbase.packages.all():
-        updates.append({
-          "name": pkg.name,
-          "version": pkg.version,
-          "updated_at": pkgbase.modified_at.strftime("%Y-%m-%d %H:%M")
-        })
-    # Truncate, we only need 15 for home page
-    updates = updates[:15]
-
-    pkgs = Package.objects.count()
+    recent_updates = Package.objects.all()\
+        .order_by("name", "-package_base__modified_at")[:15]
 
     stats = OrderedDict({
-      "Packages": pkgs,
-      "Orphan Packages":
-        sum_packages_from_base(orphaned),
+      "Packages": Package.objects.count(),
+      "Orphan Packages": 0, 
       "Packages added in the past 7 days":
-        sum_packages_from_base(pkgs_added_past_7),
+        pkgs_added_past_7.count(),
       "Packages updated in the past 7 days":
-        sum_packages_from_base(pkgs_mod_past_7),
+        pkgs_mod_past_7.count(),
       "Packages updated in the past year":
-        sum_packages_from_base(pkgs_mod_past_year),
+        pkgs_mod_past_year.count(),
       "Packages never updated":
-        sum_packages_from_base(pkgs_mod_never),
+        pkgs_mod_never.count(),
       "Registered Users": registered_users,
       "Trusted Users": tu_users
     })
@@ -84,32 +75,21 @@ class HomeView(View):
         for k in aurweb.config._parser["fingerprints"]
       }
 
-    flagged_pkgs = None
-    my_pkgs = None
-    co_pkgs = None
+    flagged_pkgs = Package.objects.none()
+    my_pkgs = Package.objects.none()
+    co_pkgs = Package.objects.none()
     if request.user.is_authenticated:
-      flagged_pkgs = []
-      my_pkgs = []
-      co_pkgs = []
       auruser = AURUser.objects.get(user_ptr=request.user)
       # Some sorting through our user's packages for pretty output
-      for pkgbase in auruser.flagged.all():
-        for pkg in pkgbase.packages.all().order_by("-modified_at"):
-          flagged_pkgs.append(pkg)
+      for pkgbase in auruser.flagged.all().order_by("-modified_at"):
+        flagged_pkgs |= pkgbase.packages.all()
       for pkgbase in auruser.maintained.all().order_by("-modified_at"):
-        for pkg in pkgbase.packages.all():
-          my_pkgs.append(pkg)
-      for pkg in auruser.comaintained.all():
-        # Just cast it to a set quickly and morph it into a list
-        # after getting rid of unique package_bases
-        bases = list(set(pkg.package_base for pkg in co_pkgs))
-        bases = sorted(bases, key=lambda e: e.modified_at, reverse=True)
-        for base in bases:
-          for pkg in base.packages.all():
-            co_pkgs.append(pkg)
+        my_pkgs |= pkgbase.packages.all()
+      for pkgbase in auruser.comaintained.all().order_by("-modified_at"):
+        co_pkgs |= pkgbase.packages.all()
 
     return aur_render(request, "home/index.html", {
-      "recent_updates": updates,
+      "recent_updates": recent_updates,
       "stats": stats,
       "has_fingerprints": len(fingerprints) > 0,
       "fingerprints": fingerprints,

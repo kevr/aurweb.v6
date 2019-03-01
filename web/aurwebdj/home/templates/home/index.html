@@ -281,12 +281,12 @@
           {% for pkg in recent_updates %}
           <tr>
             <td class="pkg-name">
-              <a href="/packages/{{ pkg|get_item:"name"|urlencode }}/">
-                {{ pkg|get_item:"name" }} {{ pkg|get_item:"version" }}
+              <a href="/packages/{{ pkg|name|urlencode }}/">
+                {{ pkg|name }} {{ pkg|version }}
               </a>
             </td>
             <td class="pkg-date">
-              <span>{{ pkg|get_item:"updated_at" }}</span>
+              <span>{{ pkg|modified_at }}</span>
             </td>
           </tr>
           {% endfor %}
