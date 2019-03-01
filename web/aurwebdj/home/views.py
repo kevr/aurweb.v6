@@ -21,9 +21,6 @@ if not aurweb.config._parser:
   except configparser.NoSectionError:
     pass
 
-def sum_packages_from_base(bases):
-  return sum([base.packages.all().count() for base in bases])
-
 class HomeView(View):
   def get(self, request, **kwargs):
     if request.user.is_authenticated:

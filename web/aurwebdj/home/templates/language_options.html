@@ -1,0 +1,7 @@
+{% for code, label in languages.items %}
+{% if code == lang|default:"en" %}
+<option value="{{ code }}" selected="selected">{{ label }}</option>
+{% else %}
+<option value="{{ code }}">{{ label }}</option>
+{% endif %}
+{% endfor %}

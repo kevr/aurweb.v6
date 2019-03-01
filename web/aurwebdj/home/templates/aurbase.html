@@ -73,13 +73,7 @@
           <fieldset>
             <div>
               <select name="setlang" id="id_setlang">
-                {% for code, label in languages.items %}
-                {% if code == lang|default:"en" %}
-                <option value="{{ code }}" selected="selected">{{ label }}</option>
-                {% else %}
-                <option value="{{ code }}">{{ label }}</option>
-                {% endif %}
-                {% endfor %}
+                {% include "language_options.html" %}
               </select>
               <input type="hidden" name="next" value="{{ request.path }}" />
               {% csrf_token %}

@@ -34,9 +34,9 @@ LANGUAGES = {
   "zh_TW": "正體中文",
 }
 
-def getList():
+def get_list():
   return LANGUAGES.keys()
 
-def getDict():
+def get_languages():
   return LANGUAGES
 

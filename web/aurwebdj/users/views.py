@@ -3,12 +3,32 @@ from django.views import View
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login, logout, get_user_model
 from django.conf import settings
-from django.utils import translation
+from django.utils import translation, timezone
+from datetime import datetime
+import pytz
+import re
 
+from helpers.timezone import get_timezones
 from helpers.render import aur_render
 from users.models import AURUser, AURAccountType
 
 User = get_user_model()
+
+# Set cached constants here
+timezones = get_timezones()
+
+class RegisterView(View):
+  def get(self, request):
+    return aur_render(request, "users/register.html", {
+      "timezones": timezones
+    })
+
+  def post(self, request):
+    error = None
+
+    return aur_render(request, "users/register.html", {
+      "message": "Successfully registered."
+    })
 
 class AccountView(View):
   def get(self, request, username):
