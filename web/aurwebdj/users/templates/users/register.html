@@ -1,0 +1,80 @@
+{% extends "aurbase.html" %}
+{% load i18n %}
+{% load trans_args %}
+{% load user_tags %}
+
+{% block ptitle %}{% trans "Register" %}{% endblock %}
+
+{% block content %}
+
+<div class="box">
+  <h2>{% trans "Register" %}</h2>
+  <p>{% trans "Use this form to create an account." %}</p>
+
+  <form id="edit-profile-form" method="post">
+    <fieldset>
+      <p>
+        <label for="id_username">{% trans "Username" %}:</label>
+        <input type="text" size="30" maxlength="16" name="U" id="id_username" /> (required)
+      </p>
+      <p>
+        <em>{% trans "Your user name is the name you will use to login. It is visible to the general public, even if your account is inactive." %}</em>
+      </p>
+
+      <p>
+        <label for="id_email">{% trans "Email Address" %}:</label>
+        <input type="text" size="30" maxlength="254" name="E" id="id_email" /> (required)
+      </p>
+
+      <p>
+        <em>{% trans "Please ensure you correctly entered your email address, otherwise you will be locked out." %}</em>
+      </p>
+
+      <p>
+        <label for="id_hide">{% trans "Hide Email Address" %}:</label>
+        <input type="checkbox" name="H" id="id_hide" />
+      </p>
+
+      <p>
+        <label for="id_realname">{% trans "Real Name" %}:</label>
+        <input type="text" size="30" maxlength="32" name="R" id="id_realname" />
+      </p>
+
+      <p>
+        <label for="id_homepage">{% trans "Homepage" %}:</label>
+        <input type="text" size="30" maxlength="32" name="HP" id="id_homepage" />
+      </p>
+
+      <p>
+        <label for="id_irc">{% trans "IRC Nick" %}:</label>
+        <input type="text" size="30" maxlength="32" name="I" id="id_irc" />
+      </p>
+
+      <p>
+        <label for="id_pgp">{% trans "PGP Key Fingerprint" %}:</label>
+        <input type="text" size="30" maxlength="32" name="K" id="id_pgp" />
+      </p>
+
+      <p>
+        <label for="id_language">{% trans "Language" %}:</label>
+        <select name="L" id="id_language">
+          {% include "language_options.html" %}
+        </select>
+      </p>
+
+      <p>
+        <label for="id_timezone">{% trans "Timezone" %}:</label>
+        <select name="TZ" id="id_timezone">
+          {% for code, tz in timezones %}
+          <option value="{{ tz }}"{% if tz == "UTC" %} selected="selected"{% endif %}>{{ code }} {{ tz }}</option>
+          {% endfor %}
+        </select>
+      </p>
+    </fieldset>
+
+  </form>
+
+</div>
+
+{% endblock %}
+
