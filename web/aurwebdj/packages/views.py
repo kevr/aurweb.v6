@@ -247,19 +247,10 @@ class PackagesView(View):
 
     results = results[o:o + pp]
 
-    nav_lhs = None
-    if page.number > 1:
-      if page.number > 2:
-        nav_lhs = range(page.number - 2, page.number)
-      else:
-        nav_lhs = range(page.number - 1, page.number)
 
-    nav_rhs = None
-    if paginator.num_pages > page.number:
-      if paginator.num_pages > page.number + 1:
-        nav_rhs = range(page.number + 1, page.number + 3)
-      else:
-        nav_rhs = range(page.number + 1, page.number + 2)
+    nav_lhs = range(1, min(5, max(page.number - 1, 0)) + 1)
+
+    nav_rhs = range(page.number + 1, min(paginator.num_pages, page.number + 6))
 
     qs = "?O=%s&SeB=%s&K=%s&SB=%s&SO=%s&PP=%s" % (
       o, SeB, K if K else '', SB, SO, pp
