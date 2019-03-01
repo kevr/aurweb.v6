@@ -1,6 +1,10 @@
 aurweb [Django Port]
 --------------------
 
+_The following TravisCI widget is run off of the most recent commit at [https://github.com/kevr/aurweb.v6](https://github.com/kevr/aurweb.v6)._
+
+[![Build Status](https://travis-ci.com/kevr/aurweb.v6.svg?branch=master)](https://travis-ci.com/kevr/aurweb.v6)
+
 This project is intended to be a continued replacement for an
 existing PHP-implemented aurweb. This django port contributes
 the following improvements to aurweb from a developer perspective:
