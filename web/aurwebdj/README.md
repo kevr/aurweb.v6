@@ -82,3 +82,8 @@ Authors of aurwebdj
 
 * Kevin Morris &lt;kevr.gtalk@gmail.com&gt;
 
+Authors of aurweb
+-----------------
+
+See [../../doc/AUTHORS](../../doc/AUTHORS) for original aurweb authors.
+
