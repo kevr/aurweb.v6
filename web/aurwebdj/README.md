@@ -74,8 +74,16 @@ Then, configure MySQL database information for Django:
 
 ### <span id="model_migrate">Database model migration</span>
 
-<small>If you are migrating from another legacy aurweb database, you should
-skip this section and continue on to [Migration](#migrate).</small>
+If you are migrating from another legacy aurweb database, you should
+skip this section and continue on to [Migration](#migrate).
+
+After running the steps in [Setup](#setup), you can run the following
+to setup the production database:
+
+	(venv) shell$ ./manage.py migrate
+
+If all goes well, you can continue to serving aurwebdj to the web
+via nginx + uwsgi, or by `./manage.py runserver` for DEBUG mode.
 
 <span id="migrate">Migration</span>
 -----------------------------------
