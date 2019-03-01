@@ -1,6 +1,8 @@
 <span id="top">aurwebdj</span>
 ------------------------------
 
+[![Build Status](https://travis-ci.com/kevr/aurweb.v6.svg?branch=master)](https://travis-ci.com/kevr/aurweb.v6)
+
 <span id="setup">Setup</span>
 -----------------------------
 
