@@ -16,7 +16,7 @@ require the following steps:
 
 Setup a virtualenv inside of $project_root/web/aurwebdj and run:
 
-  (venv) shell$ pip install -r requirements.txt
+	(venv) shell$ pip install -r requirements.txt
 
 Whenever you are working with Django or aurweb scripts related
 to this project, you should be under the virtualenv above.
@@ -31,23 +31,23 @@ for information about bootstrapping `/etc/aurweb/config`.
 Login to MySQL as root and create the aurweb database that
 Django will use:
 
-  shell$ mysql -u root
-  mysql[NONE]> CREATE USER 'aur'@'localhost' IDENTIFIED BY 'aur_password';
-  ...
-  mysql[NONE]> CREATE DATABASE aurweb CHARACTER SET utf8;
-  ...
-  mysql[NONE]> USE aurweb;
-  ...
-  mysql[aurweb]> GRANT ALL ON aurweb TO 'aur'@'localhost'; 
+	shell$ mysql -u root
+	mysql[NONE]> CREATE USER 'aur'@'localhost' IDENTIFIED BY 'aur_password';
+	...
+	mysql[NONE]> CREATE DATABASE aurweb CHARACTER SET utf8;
+	...
+	mysql[NONE]> USE aurweb;
+	...
+	mysql[aurweb]> GRANT ALL ON aurweb TO 'aur'@'localhost'; 
 
 Then, configure MySQL database information for Django:
 
-  # /etc/aurweb/my.cnf
-  [client]
-  database = aurweb
-  user = aur
-  password = aur_password
-  default-character-set = utf8
+	# /etc/aurweb/my.cnf
+	[client]
+	database = aurweb
+	user = aur
+	password = aur_password
+	default-character-set = utf8
 
 ### <span id="model_migrate">Database model migration</span>
 
@@ -69,12 +69,9 @@ migration script at `$project_root/lib/aurweb/scripts/migrate.py`.
 of records. However, it will bypass records which already exist
 when running the script.
 
-```
-./lib/aurweb/scripts/migrate.py [--setup]
+	./lib/aurweb/scripts/migrate.py [--setup]
+		--setup | Run Django `makemigrations` and `migrate` commands
 
-  --setup | Run Django `makemigrations` and `migrate` commands
-
-```
 
 Authors of aurwebdj
 -------------------
