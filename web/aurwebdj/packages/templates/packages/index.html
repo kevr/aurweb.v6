@@ -8,34 +8,7 @@
 {% block content %}
 <div id="pkglist-results" class="box">
   {% include "packages/search_criteria.html" %}
-  <div class="pkglist-stats">
-    <p>{{ package_count }} packages found. Page {{ page.number }} of {{ page.paginator.num_pages }}.</p>
-    <p class="pkglist-nav">
-      {% if page.has_previous %}
-      <a class="page" href="{{ qs }}&O=0">« {% trans "First" %}</a>
-      <a class="page" href="{{ qs }}&O={{ page.previous_page_number|mul:pp }}">‹ {% trans "Previous" %}</a>
-      {% endif %}
-
-      {% if nav_lhs %}
-      {% for i in nav_lhs %}
-      <a class="page" href="{{ qs }}&O={{ i|mul:pp }}">{{ i }}</a>
-      {% endfor %}
-      {% endif %}
-
-      <span class="page">{{ page.number }}</span>
-
-      {% if nav_rhs %}
-      {% for i in nav_rhs %}
-      <a class="page" href="{{ qs }}&O={{ i|mul:pp }}">{{ i }}</a>
-      {% endfor %}
-      {% endif %}
-
-      {% if page.has_next %}
-      <a class="page" href="{{ qs }}&O={{ page.next_page_number|mul:pp }}">{% trans "Next" %} ›</a> 
-      <a class="page" href="{{ qs }}&O={{ page.paginator.num_pages|mul:pp }}">{% trans "Last" %} »</a>
-      {% endif %}
-    </p>
-  </div>
+  {% include "packages/pkglist_stats.html" %}
 
   <form id="pkglist-results-form" method="post" action="/pkgbase/?O=0&SeB=n">
     <table class="results">
@@ -86,6 +59,8 @@
 
     </table>
   </form>
+
+  {% include "packages/pkglist_stats.html" %}
 </div>
 
 {% endblock %}
